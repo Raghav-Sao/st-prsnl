@@ -1,0 +1,7 @@
+tatamotors -> capital end 13071.650000000007
+yesbank -> capital end 13035.150000000005
+reliance_1_min -> +104
+nifty_pe_5_min -> capital start 13261.050000000003
+nifty_pe_15_min
+11900_ce - +348
+19000_pe - 238.499999999987
