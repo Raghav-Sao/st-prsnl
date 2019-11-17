@@ -5,7 +5,7 @@ const _ =  require('lodash');
 const fs = require('fs');
 const moment = require("moment");
 let rawdata = fs.readFileSync('./data/nifty_1_min.json');
-const callData = _.groupBy(_.map(JSON.parse(fs.readFileSync('./data/nifty_ce_1_min_11900.json')).data.candles, (data) => {
+const callData = _.groupBy(_.map(JSON.parse(fs.readFileSync('./data/week/11900_ce.json')).data.candles, (data) => {
     return {
         time: data[0],
         open: Number(data[1]),
@@ -15,7 +15,7 @@ const callData = _.groupBy(_.map(JSON.parse(fs.readFileSync('./data/nifty_ce_1_m
     }
 }), 'time');
 
-const putData = _.groupBy(_.map(JSON.parse(fs.readFileSync('./data/nifty_pe_1_min_11900.json')).data.candles, (data) => {
+const putData = _.groupBy(_.map(JSON.parse(fs.readFileSync('./data/week/12000_pe.json')).data.candles, (data) => {
     return {
         time: data[0],
         open: Number(data[1]),
@@ -38,7 +38,7 @@ function emitStockData(data, index, lastCandle = null) {
         }
         const hours = moment(data[0]).hours();
         const minutes = moment(data[0]).minutes(); 
-        if (hours < 11) {
+        if (hours < 10) {
             transformedCandle.noTrade = true;
         }
         transformedCandle.lastCandle = lastCandle;
@@ -50,17 +50,28 @@ function emitStockData(data, index, lastCandle = null) {
         const upMove = move > 0 ? move : 0;
         let lastUpMoveAvg = lastCandle ? lastCandle.upMoveAvg : transformedCandle.close;
         let lastDownMoveAvg = lastCandle ? lastCandle.downMoveAvg : transformedCandle.close;
+        let lastUpMoveAvg21 = lastCandle ? lastCandle.upMoveAvg21 : transformedCandle.close;
+        let lastDownMoveAvg21 = lastCandle ? lastCandle.upMoveAvg21 : transformedCandle.close;
 
         const downMove = move < 0  ? Math.abs(move) : 0;
         const period = 14;
         const upMoveAvg = (upMove/period) + (((period -1)*lastUpMoveAvg)/period);
         const downMoveAvg = (downMove/period) + (((period -1)*lastDownMoveAvg)/period);
+        const upMoveAvg21 = (upMove/21) + (((21 -1)*lastUpMoveAvg21)/21);
+        const downMoveAvg21 = (downMove/21) + (((21 -1)*lastDownMoveAvg21)/21);
+
         const rs = upMoveAvg/downMoveAvg;
+        const rs21 = upMoveAvg21/downMoveAvg21;
         const rsi = (100 - (100/ (1 + rs)));
+        const rsi21 = (100 - (100/ (1 + rs21)));
         transformedCandle.upMoveAvg = upMoveAvg;
         transformedCandle.downMoveAvg = downMoveAvg;
+        transformedCandle.upMoveAvg21 = upMoveAvg21;
+        transformedCandle.downMoveAvg21 = downMoveAvg21;
         transformedCandle.rsi = rsi;
-        if (hours >= 14 && minutes >= 0) {
+        transformedCandle.rsi21 = rsi21;
+
+        if (hours >= 15 && minutes >= 0) {
             transformedCandle.noTrade = true;
             if (hours === 15 && minutes === 20) {
                 StockExchange.emit('shutDown', transformedCandle);

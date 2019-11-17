@@ -8,13 +8,14 @@ const SimpleRsiBreakOutStrategy = {
 SimpleRsiBreakOutStrategy.checkCondition = (candle) => {
     if (candle.noTrade) return;
     // ((candle.rsi - candle.lastCandle.rsi) > 2)
-    if ((candle.rsi > 50 && candle.lastCandle.rsi <= 50) ) {
-        // SimpleRsiBreakOutStrategy.tradeCondition = 'call';
-        // return true;
-    } else if ((candle.rsi <  50 && candle.lastCandle.rsi >= 50)) {
-        // ((candle.lastCandle.rsi - candle.rsi) > 2)
-        SimpleRsiBreakOutStrategy.tradeCondition = 'put';
+    if ((candle.rsi21 > 52 && candle.lastCandle.rsi21 <= 50) ) {
+        SimpleRsiBreakOutStrategy.tradeCondition = 'call';
         return true;
+    } else if ((candle.rsi21 <  46 && candle.lastCandle.rsi21 >= 50)) {
+        console.log(candle.rsi, candle.rsi21);
+        // ((candle.lastCandle.rsi - candle.rsi) > 2)
+        // SimpleRsiBreakOutStrategy.tradeCondition = 'put';
+        // return true;
     }
     return false;
 }
@@ -92,16 +93,16 @@ SimpleRsiBreakOutStrategy.setSummary =  (candle)=> {
    SimpleRsiBreakOutStrategy.summary[day][hours] = hrSummary || {};
    const callPutSummary = SimpleRsiBreakOutStrategy.summary[day][hours][SimpleRsiBreakOutStrategy.tradeCondition];
    SimpleRsiBreakOutStrategy.summary[day][hours][SimpleRsiBreakOutStrategy.tradeCondition] = callPutSummary || [];
-   SimpleRsiBreakOutStrategy.summary[day][hours][SimpleRsiBreakOutStrategy.tradeCondition].push(candle[SimpleRsiBreakOutStrategy.tradeCondition].close  - SimpleRsiBreakOutStrategy.invested);
-   SimpleRsiBreakOutStrategy.summary[day].total += (candle[SimpleRsiBreakOutStrategy.tradeCondition].close  - SimpleRsiBreakOutStrategy.invested)
+   SimpleRsiBreakOutStrategy.summary[day][hours][SimpleRsiBreakOutStrategy.tradeCondition].push(candle[SimpleRsiBreakOutStrategy.tradeCondition].close  - SimpleRsiBreakOutStrategy.invested - (40/500));
+   SimpleRsiBreakOutStrategy.summary[day].total += (candle[SimpleRsiBreakOutStrategy.tradeCondition].close  - SimpleRsiBreakOutStrategy.invested - (40/500))
 }
 
 SimpleRsiBreakOutStrategy.closeTrade = (candle , reason='') => {
     if (!SimpleRsiBreakOutStrategy.tradeCondition)  return;
     console.log(SimpleRsiBreakOutStrategy.tradeCondition,SimpleRsiBreakOutStrategy.invested );
-    SimpleRsiBreakOutStrategy.capital = SimpleRsiBreakOutStrategy.capital +  candle[SimpleRsiBreakOutStrategy.tradeCondition].close  - (40/750);
+    SimpleRsiBreakOutStrategy.capital = SimpleRsiBreakOutStrategy.capital +  candle[SimpleRsiBreakOutStrategy.tradeCondition].close  - (40/500);
     SimpleRsiBreakOutStrategy.setSummary(candle);
-    console.log(`Trade close - ${reason} profit:  ${candle[SimpleRsiBreakOutStrategy.tradeCondition].close  -  SimpleRsiBreakOutStrategy.invested - 40/750}`);
+    console.log(`Trade close - ${reason} profit:  ${candle[SimpleRsiBreakOutStrategy.tradeCondition].close  -  SimpleRsiBreakOutStrategy.invested - 40/500}`);
     console.log(`capital : ${SimpleRsiBreakOutStrategy.capital}`);
     console.log(SimpleRsiBreakOutStrategy.startCandle.time, candle.time);
     console.log(SimpleRsiBreakOutStrategy.startCandle.rsi, candle.rsi);
