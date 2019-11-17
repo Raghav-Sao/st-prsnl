@@ -1,0 +1,892 @@
+put 199.6
+Trade close - stoploss profit:  0.4000000000000057
+capital : 0.4000000000000057
+call 185.75
+Trade close - secondLowerPeak profit:  3.4000000000000057
+capital : 3.8000000000000114
+put 190.8
+Trade close - secondLowerPeak profit:  -3.0500000000000114
+capital : 0.75
+put 186.65
+Trade close - stoploss profit:  0.04999999999998295
+capital : 0.799999999999983
+put 187.55
+Trade close - stoploss profit:  -0.950000000000017
+capital : -0.1500000000000341
+put 187.3
+Trade close - stoploss profit:  0.6499999999999773
+capital : 0.49999999999994316
+call 191.75
+Trade close - secondLowerPeak profit:  7
+capital : 7.499999999999943
+put 183.2
+Trade close - stoploss profit:  1.25
+capital : 8.749999999999943
+call 197.15
+Trade close - stoploss profit:  -2.1500000000000057
+capital : 6.5999999999999375
+call 196.6
+Trade close - stoploss profit:  -2.5999999999999943
+capital : 3.999999999999943
+call 195.5
+Trade close - stoploss profit:  -1.4000000000000057
+capital : 2.5999999999999375
+call 191.4
+Trade close - secondLowerPeak profit:  1.1500000000000057
+capital : 3.749999999999943
+put 187.75
+Trade close - stoploss profit:  -1.9499999999999886
+capital : 1.7999999999999545
+call 194
+Trade close - stoploss profit:  0.5
+capital : 2.2999999999999545
+put 186.5
+Trade close - stoploss profit:  -0.8000000000000114
+capital : 1.4999999999999432
+put 181.95
+Trade close - stoploss profit:  2.6500000000000057
+capital : 4.149999999999949
+call 194.65
+Trade close - stoploss profit:  -1.25
+capital : 2.899999999999949
+put 178.35
+Trade close - stoploss profit:  -0.15000000000000568
+capital : 2.749999999999943
+put 173.95
+Trade close - stoploss profit:  1.0500000000000114
+capital : 3.7999999999999545
+call 199
+Trade close - stoploss profit:  -1.25
+capital : 2.5499999999999545
+call 199.8
+Trade close - stoploss profit:  -0.10000000000002274
+capital : 2.449999999999932
+put 173.95
+Trade close - stoploss profit:  1.8000000000000114
+capital : 4.249999999999943
+put 143.1
+Trade close - stoploss profit:  0.45000000000001705
+capital : 4.69999999999996
+call 225
+Trade close - stoploss profit:  -0.05000000000001137
+capital : 4.649999999999949
+put 143
+Trade close - secondLowerPeak profit:  -2.1999999999999886
+capital : 2.44999999999996
+put 141.7
+Trade close - stoploss profit:  1.0500000000000114
+capital : 3.4999999999999716
+call 227.2
+Trade close - secondLowerPeak profit:  0.35000000000002274
+capital : 3.8499999999999943
+put 142
+Trade close - stoploss profit:  0
+capital : 3.8499999999999943
+put 142.55
+Trade close - stoploss profit:  0
+capital : 3.8499999999999943
+put 143.15
+Trade close - stoploss profit:  -0.5
+capital : 3.3499999999999943
+put 143.2
+Trade close - stoploss profit:  -0.9499999999999886
+capital : 2.4000000000000057
+put 143.5
+Trade close - stoploss profit:  -1
+capital : 1.4000000000000057
+put 142.7
+Trade close - stoploss profit:  0.20000000000001705
+capital : 1.6000000000000227
+call 228.4
+Trade close - stoploss profit:  0.6500000000000057
+capital : 2.2500000000000284
+call 230.4
+Trade close - stoploss profit:  -3.6500000000000057
+capital : -1.3999999999999773
+call 229.6
+Trade close - stoploss profit:  -0.04999999999998295
+capital : -1.4499999999999602
+call 233.35
+Trade close - secondLowerPeak profit:  6.75
+capital : 5.30000000000004
+put 136.45
+Trade close - stoploss profit:  0.4000000000000057
+capital : 5.7000000000000455
+call 211.85
+Trade close - stoploss profit:  -2.75
+capital : 2.9500000000000455
+call 212
+Trade close - stoploss profit:  -1.6999999999999886
+capital : 1.2500000000000568
+put 157
+Trade close - stoploss profit:  -0.30000000000001137
+capital : 0.9500000000000455
+put 156.95
+Trade close - stoploss profit:  0.6500000000000057
+capital : 1.6000000000000512
+call 209.85
+Trade close - secondLowerPeak profit:  3.8000000000000114
+capital : 5.4000000000000625
+put 153.9
+Trade close - stoploss profit:  0
+capital : 5.4000000000000625
+call 210.75
+Trade close - stoploss profit:  1.25
+capital : 6.6500000000000625
+call 209.75
+Trade close - stoploss profit:  0.4000000000000057
+capital : 7.050000000000068
+put 150.3
+Trade close - stoploss profit:  0.44999999999998863
+capital : 7.500000000000057
+call 214.55
+Trade close - stoploss profit:  0.44999999999998863
+capital : 7.9500000000000455
+put 151.7
+Trade close - stoploss profit:  0.45000000000001705
+capital : 8.400000000000063
+call 214.1
+Trade close - secondLowerPeak profit:  1.4000000000000057
+capital : 9.800000000000068
+put 151.45
+Trade close - stoploss profit:  -0.8999999999999773
+capital : 8.900000000000091
+put 150.25
+Trade close - stoploss profit:  -0.5500000000000114
+capital : 8.35000000000008
+put 150.25
+Trade close - stoploss profit:  0.30000000000001137
+capital : 8.650000000000091
+call 214.1
+Trade close - crossingDown70 profit:  7.75
+capital : 16.40000000000009
+put 144.95
+Trade close - stoploss profit:  -2.1499999999999773
+capital : 14.250000000000114
+put 144.5
+Trade close - stoploss profit:  -1.4499999999999886
+capital : 12.800000000000125
+put 144.35
+Trade close - stoploss profit:  0.25
+capital : 13.050000000000125
+call 222.85
+Trade close - stoploss profit:  -1.75
+capital : 11.300000000000125
+put 147.25
+Trade close - stoploss profit:  -3.25
+capital : 8.050000000000125
+put 148.15
+Trade close - stoploss profit:  0.15000000000000568
+capital : 8.20000000000013
+call 213.95
+Trade close - stoploss profit:  -1.799999999999983
+capital : 6.400000000000148
+call 215.2
+Trade close - secondLowerPeak profit:  1.75
+capital : 8.150000000000148
+put 146.85
+Trade close - stoploss profit:  -0.19999999999998863
+capital : 7.950000000000159
+call 220.15
+Trade close - stoploss profit:  -2.5
+capital : 5.450000000000159
+put 144.45
+Trade close - stoploss profit:  -0.19999999999998863
+capital : 5.2500000000001705
+put 144.1
+Trade close - stoploss profit:  -0.15000000000000568
+capital : 5.100000000000165
+call 219.25
+Trade close - stoploss profit:  0.15000000000000568
+capital : 5.2500000000001705
+put 144.35
+Trade close - stoploss profit:  0.5999999999999943
+capital : 5.850000000000165
+call 219.3
+Trade close - stoploss profit:  0.6499999999999773
+capital : 6.500000000000142
+put 143.45
+Trade close - secondLowerPeak profit:  0.4000000000000057
+capital : 6.900000000000148
+put 144.05
+Trade close - stoploss profit:  1.25
+capital : 8.150000000000148
+call 218
+Trade close - stoploss profit:  -0.5
+capital : 7.650000000000148
+put 144.6
+Trade close - stoploss profit:  0.5999999999999943
+capital : 8.250000000000142
+call 218
+Trade close - stoploss profit:  -1.25
+capital : 7.000000000000142
+put 147.9
+Trade close - stoploss profit:  -0.20000000000001705
+capital : 6.800000000000125
+call 217.5
+Trade close - stoploss profit:  -0.5500000000000114
+capital : 6.250000000000114
+put 147.7
+Trade close - stoploss profit:  -0.5999999999999943
+capital : 5.650000000000119
+call 196.8
+Trade close - secondLowerPeak profit:  1.1999999999999886
+capital : 6.850000000000108
+put 161.15
+Trade close - stoploss profit:  0.04999999999998295
+capital : 6.900000000000091
+call 198.8
+Trade close - stoploss profit:  -0.8000000000000114
+capital : 6.10000000000008
+put 161
+Trade close - stoploss profit:  0.05000000000001137
+capital : 6.150000000000091
+call 189.5
+Trade close - stoploss profit:  0.75
+capital : 6.900000000000091
+call 183.45
+Trade close - secondLowerPeak profit:  3.5500000000000114
+capital : 10.450000000000102
+put 166.1
+Trade close - stoploss profit:  -0.5999999999999943
+capital : 9.850000000000108
+call 188
+Trade close - stoploss profit:  -3.5
+capital : 6.350000000000108
+call 187.4
+Trade close - secondLowerPeak profit:  4.349999999999994
+capital : 10.700000000000102
+put 162.05
+Trade close - stoploss profit:  1.25
+capital : 11.950000000000102
+call 193.5
+Trade close - crossingDown70 profit:  5.300000000000011
+capital : 17.250000000000114
+put 159.65
+Trade close - stoploss profit:  -0.30000000000001137
+capital : 16.950000000000102
+call 197.5
+Trade close - secondLowerPeak profit:  2.75
+capital : 19.700000000000102
+put 153.4
+Trade close - stoploss profit:  1.9499999999999886
+capital : 21.65000000000009
+call 200.35
+Trade close - secondLowerPeak profit:  1.200000000000017
+capital : 22.850000000000108
+put 163.05
+Trade close - stoploss profit:  -1.9000000000000057
+capital : 20.950000000000102
+call 168.95
+Trade close - secondLowerPeak profit:  -0.09999999999999432
+capital : 20.850000000000108
+put 169.65
+Trade close - stoploss profit:  -0.25
+capital : 20.600000000000108
+call 168.1
+Trade close - secondLowerPeak profit:  0.20000000000001705
+capital : 20.800000000000125
+put 167.35
+Trade close - stoploss profit:  0.950000000000017
+capital : 21.750000000000142
+call 163.8
+Trade close - secondLowerPeak profit:  2.6999999999999886
+capital : 24.45000000000013
+put 167.7
+Trade close - stoploss profit:  0.45000000000001705
+capital : 24.900000000000148
+put 124.75
+Trade close - stoploss profit:  1.0999999999999943
+capital : 26.000000000000142
+call 229.3
+Trade close - stoploss profit:  -5
+capital : 21.000000000000142
+put 126.5
+Trade close - stoploss profit:  -1.9000000000000057
+capital : 19.100000000000136
+put 124.5
+Trade close - stoploss profit:  -0.3499999999999943
+capital : 18.750000000000142
+call 233.55
+Trade close - secondLowerPeak profit:  0.44999999999998863
+capital : 19.20000000000013
+put 117.5
+Trade close - stoploss profit:  -0.29999999999999716
+capital : 18.900000000000134
+call 243.5
+Trade close - secondLowerPeak profit:  1.5
+capital : 20.400000000000148
+put 118.15
+Trade close - stoploss profit:  -0.15000000000000568
+capital : 20.250000000000142
+put 114.9
+Trade close - stoploss profit:  0.14999999999999147
+capital : 20.400000000000134
+call 250.8
+Trade close - stoploss profit:  0.3499999999999943
+capital : 20.750000000000142
+put 113.85
+Trade close - stoploss profit:  0.5500000000000114
+capital : 21.300000000000153
+call 249.95
+Trade close - stoploss profit:  0.950000000000017
+capital : 22.25000000000017
+call 252.6
+Trade close - stoploss profit:  -0.8499999999999943
+capital : 21.400000000000176
+put 113.75
+Trade close - stoploss profit:  -0.04999999999999716
+capital : 21.35000000000018
+put 113.55
+Trade close - stoploss profit:  0.15000000000000568
+capital : 21.500000000000185
+call 249.8
+Trade close - stoploss profit:  -0.20000000000001705
+capital : 21.300000000000153
+put 114
+Trade close - stoploss profit:  -0.5
+capital : 20.800000000000153
+call 232.75
+Trade close - stoploss profit:  0.09999999999999432
+capital : 20.900000000000148
+put 111.15
+Trade close - stoploss profit:  1.0499999999999972
+capital : 21.950000000000145
+call 231
+Trade close - stoploss profit:  -1
+capital : 20.95000000000016
+call 216.5
+Trade close - secondLowerPeak profit:  5.5
+capital : 26.45000000000016
+put 120.35
+Trade close - stoploss profit:  -0.19999999999998863
+capital : 26.25000000000017
+call 222
+Trade close - secondLowerPeak profit:  0.5
+capital : 26.75000000000017
+put 119.65
+Trade close - stoploss profit:  -0.75
+capital : 26.00000000000017
+put 120.2
+Trade close - stoploss profit:  1.7999999999999972
+capital : 27.800000000000168
+call 220.25
+Trade close - stoploss profit:  -0.05000000000001137
+capital : 27.75000000000017
+put 117.35
+Trade close - stoploss profit:  1.1500000000000057
+capital : 28.900000000000176
+call 219.2
+Trade close - stoploss profit:  -0.29999999999998295
+capital : 28.600000000000193
+call 218.7
+Trade close - stoploss profit:  1.8500000000000227
+capital : 30.450000000000216
+put 121.05
+Trade close - stoploss profit:  -0.3999999999999915
+capital : 30.050000000000225
+call 218.3
+Trade close - stoploss profit:  -2.3000000000000114
+capital : 27.750000000000227
+call 217.6
+Trade close - stoploss profit:  -1.0999999999999943
+capital : 26.650000000000233
+call 217
+Trade close - stoploss profit:  0
+capital : 26.650000000000233
+put 117.9
+Trade close - stoploss profit:  -0.45000000000000284
+capital : 26.20000000000023
+put 117.5
+Trade close - stoploss profit:  1.5
+capital : 27.70000000000023
+call 218.8
+Trade close - stoploss profit:  -0.30000000000001137
+capital : 27.400000000000205
+put 118.6
+Trade close - stoploss profit:  -1.0999999999999943
+capital : 26.30000000000021
+call 217.9
+Trade close - stoploss profit:  -6.900000000000006
+capital : 19.400000000000205
+call 220.95
+Trade close - stoploss profit:  -1
+capital : 18.400000000000205
+put 116.8
+Trade close - stoploss profit:  0.7000000000000028
+capital : 19.100000000000207
+call 212.7
+Trade close - crossingDown70 profit:  17.450000000000017
+capital : 36.55000000000021
+put 107.45
+Trade close - stoploss profit:  -0.5499999999999972
+capital : 36.00000000000021
+call 234
+Trade close - stoploss profit:  -0.6500000000000057
+capital : 35.35000000000022
+put 105.15
+Trade close - stoploss profit:  -0.15000000000000568
+capital : 35.200000000000216
+call 239.5
+Trade close - crossingDown70 profit:  6.550000000000011
+capital : 41.75000000000023
+put 101.65
+Trade close - stoploss profit:  -0.75
+capital : 41.00000000000023
+call 243
+Trade close - stoploss profit:  0
+capital : 41.00000000000023
+put 99.75
+Trade close - stoploss profit:  1.2999999999999972
+capital : 42.300000000000225
+call 237.35
+Trade close - stoploss profit:  0.25
+capital : 42.55000000000021
+put 101.05
+Trade close - stoploss profit:  -0.45000000000000284
+capital : 42.10000000000021
+put 101.15
+Trade close - stoploss profit:  -0.3500000000000085
+capital : 41.7500000000002
+call 238.35
+Trade close - crossingDown70 profit:  3.3000000000000114
+capital : 45.05000000000021
+put 109.7
+Trade close - stoploss profit:  2.549999999999997
+capital : 47.60000000000021
+call 211.45
+Trade close - stoploss profit:  -2.5
+capital : 45.10000000000019
+put 111.25
+Trade close - stoploss profit:  -0.8499999999999943
+capital : 44.2500000000002
+put 110.9
+Trade close - stoploss profit:  0.14999999999999147
+capital : 44.40000000000019
+call 208.95
+Trade close - stoploss profit:  0.6000000000000227
+capital : 45.00000000000023
+call 214
+Trade close - stoploss profit:  0
+capital : 45.00000000000023
+put 110.25
+Trade close - stoploss profit:  -0.75
+capital : 44.25000000000023
+put 110.85
+Trade close - stoploss profit:  1.1000000000000085
+capital : 45.350000000000236
+call 200.4
+Trade close - secondLowerPeak profit:  -0.5
+capital : 44.85000000000022
+put 120.2
+Trade close - stoploss profit:  -0.6500000000000057
+capital : 44.200000000000216
+call 200.75
+Trade close - stoploss profit:  -1.1500000000000057
+capital : 43.05000000000021
+put 117.6
+Trade close - stoploss profit:  -0.25
+capital : 42.80000000000021
+call 201.05
+Trade close - secondLowerPeak profit:  -0.75
+capital : 42.05000000000021
+put 117.95
+Trade close - secondLowerPeak profit:  -1.4000000000000057
+capital : 40.650000000000205
+put 118.35
+Trade close - stoploss profit:  1.5
+capital : 42.150000000000205
+call 199.4
+Trade close - stoploss profit:  -2.0500000000000114
+capital : 40.10000000000019
+call 196.8
+Trade close - stoploss profit:  0.8999999999999773
+capital : 41.00000000000017
+call 197.7
+Trade close - stoploss profit:  -0.549999999999983
+capital : 40.45000000000019
+put 119.8
+Trade close - stoploss profit:  -0.8999999999999915
+capital : 39.550000000000196
+call 199.6
+Trade close - secondLowerPeak profit:  9.150000000000006
+capital : 48.700000000000216
+put 102.85
+Trade close - stoploss profit:  0.15000000000000568
+capital : 48.85000000000022
+call 223.05
+Trade close - secondLowerPeak profit:  21.299999999999983
+capital : 70.1500000000002
+put 91.9
+Trade close - stoploss profit:  2.549999999999997
+capital : 72.7000000000002
+call 209.7
+Trade close - stoploss profit:  0.8500000000000227
+capital : 73.55000000000024
+put 109
+Trade close - stoploss profit:  1.5
+capital : 75.05000000000024
+call 210.95
+Trade close - stoploss profit:  -3.549999999999983
+capital : 71.50000000000026
+put 110
+Trade close - stoploss profit:  -0.09999999999999432
+capital : 71.40000000000026
+call 210
+Trade close - stoploss profit:  -0.75
+capital : 70.65000000000026
+call 212.85
+Trade close - stoploss profit:  -2.3499999999999943
+capital : 68.30000000000027
+put 111.4
+Trade close - stoploss profit:  -0.8000000000000114
+capital : 67.50000000000026
+call 156.25
+Trade close - secondLowerPeak profit:  6.800000000000011
+capital : 74.30000000000027
+put 146.1
+Trade close - stoploss profit:  3.25
+capital : 77.55000000000027
+call 158.45
+Trade close - stoploss profit:  -4.25
+capital : 73.30000000000027
+put 145.4
+Trade close - stoploss profit:  -2.700000000000017
+capital : 70.60000000000025
+put 143.9
+Trade close - stoploss profit:  -0.75
+capital : 69.85000000000025
+call 156.4
+Trade close - stoploss profit:  1.5
+capital : 71.35000000000025
+put 143.4
+Trade close - stoploss profit:  -1.200000000000017
+capital : 70.15000000000023
+put 142.3
+Trade close - stoploss profit:  -0.20000000000001705
+capital : 69.95000000000022
+call 158.15
+Trade close - stoploss profit:  -1.0999999999999943
+capital : 68.85000000000022
+call 156.35
+Trade close - stoploss profit:  -2.049999999999983
+capital : 66.80000000000024
+call 151.15
+Trade close - secondLowerPeak profit:  -1.0999999999999943
+capital : 65.70000000000024
+put 148.5
+Trade close - stoploss profit:  0.3499999999999943
+capital : 66.05000000000024
+put 149.35
+Trade close - stoploss profit:  0.05000000000001137
+capital : 66.10000000000025
+call 149.85
+Trade close - stoploss profit:  1.4000000000000057
+capital : 67.50000000000026
+put 147.6
+Trade close - stoploss profit:  3.4000000000000057
+capital : 70.90000000000026
+call 150.45
+Trade close - secondLowerPeak profit:  2.4000000000000057
+capital : 73.30000000000027
+put 147.3
+Trade close - stoploss profit:  0.19999999999998863
+capital : 73.50000000000026
+call 148.5
+Trade close - stoploss profit:  -1.6999999999999886
+capital : 71.80000000000027
+call 142.3
+Trade close - stoploss profit:  -0.75
+capital : 71.05000000000027
+put 155.7
+Trade close - stoploss profit:  0.20000000000001705
+capital : 71.25000000000028
+call 140.85
+Trade close - stoploss profit:  0.45000000000001705
+capital : 71.7000000000003
+put 157
+Trade close - stoploss profit:  -1.5
+capital : 70.2000000000003
+call 140.1
+Trade close - stoploss profit:  0.15000000000000568
+capital : 70.3500000000003
+call 140.9
+Trade close - stoploss profit:  0.15000000000000568
+capital : 70.50000000000031
+put 155.9
+Trade close - stoploss profit:  0
+capital : 70.50000000000031
+call 140.9
+Trade close - stoploss profit:  -1.5500000000000114
+capital : 68.9500000000003
+call 141.05
+Trade close - stoploss profit:  -0.35000000000002274
+capital : 68.60000000000028
+put 151.4
+Trade close - stoploss profit:  1.0999999999999943
+capital : 69.70000000000027
+call 143.65
+Trade close - secondLowerPeak profit:  1
+capital : 70.70000000000027
+put 150.15
+Trade close - stoploss profit:  0.5999999999999943
+capital : 71.30000000000027
+call 149.7
+Trade close - stoploss profit:  -1.1499999999999773
+capital : 70.15000000000029
+put 149.5
+Trade close - stoploss profit:  -2
+capital : 68.15000000000029
+put 148.05
+Trade close - stoploss profit:  -1.8000000000000114
+capital : 66.35000000000028
+put 148.6
+Trade close - secondLowerPeak profit:  -4.400000000000006
+capital : 61.95000000000027
+put 145.5
+Trade close - stoploss profit:  -0.9000000000000057
+capital : 61.05000000000027
+call 147.5
+Trade close - secondLowerPeak profit:  2.8499999999999943
+capital : 63.90000000000026
+put 145
+Trade close - stoploss profit:  -1.9499999999999886
+capital : 61.95000000000027
+put 146
+Trade close - stoploss profit:  -3.5
+capital : 58.45000000000027
+put 148.35
+Trade close - stoploss profit:  2.700000000000017
+capital : 61.15000000000029
+call 145.75
+Trade close - stoploss profit:  -1.4499999999999886
+capital : 59.7000000000003
+call 146.55
+Trade close - stoploss profit:  -0.8000000000000114
+capital : 58.90000000000029
+put 145.35
+Trade close - stoploss profit:  -0.75
+capital : 58.15000000000029
+call 148.4
+Trade close - stoploss profit:  -2.1500000000000057
+capital : 56.000000000000284
+call 148.45
+Trade close - crossingDown70 profit:  12.5
+capital : 68.50000000000028
+put 133.8
+Trade close - stoploss profit:  -1.6500000000000057
+capital : 66.85000000000028
+call 158.1
+Trade close - stoploss profit:  -1.5999999999999943
+capital : 65.25000000000028
+put 125.05
+Trade close - stoploss profit:  1.8500000000000085
+capital : 67.10000000000029
+call 158.25
+Trade close - stoploss profit:  1.1999999999999886
+capital : 68.30000000000028
+put 125.5
+Trade close - stoploss profit:  0.5499999999999972
+capital : 68.85000000000028
+call 158.6
+Trade close - stoploss profit:  -0.799999999999983
+capital : 68.0500000000003
+put 124.7
+Trade close - stoploss profit:  0.3999999999999915
+capital : 68.45000000000029
+call 160
+Trade close - stoploss profit:  -0.8499999999999943
+capital : 67.60000000000029
+put 124.85
+Trade close - stoploss profit:  -1.0499999999999972
+capital : 66.5500000000003
+put 125.6
+Trade close - stoploss profit:  -0.29999999999999716
+capital : 66.2500000000003
+call 155.7
+Trade close - stoploss profit:  0.30000000000001137
+capital : 66.55000000000031
+call 156.2
+Trade close - stoploss profit:  -2.1499999999999773
+capital : 64.40000000000033
+call 150.85
+Trade close - stoploss profit:  -0.09999999999999432
+capital : 64.30000000000034
+put 129.45
+Trade close - stoploss profit:  -1.4999999999999858
+capital : 62.80000000000035
+put 128.45
+Trade close - stoploss profit:  1.200000000000017
+capital : 64.00000000000037
+call 152.4
+Trade close - stoploss profit:  -1.5
+capital : 62.50000000000037
+put 128.1
+Trade close - stoploss profit:  -1
+capital : 61.50000000000037
+call 148.95
+Trade close - stoploss profit:  -0.9499999999999886
+capital : 60.55000000000038
+call 149.75
+Trade close - stoploss profit:  -0.6999999999999886
+capital : 59.85000000000039
+put 127.6
+Trade close - stoploss profit:  -1.1999999999999886
+capital : 58.650000000000404
+call 149
+Trade close - stoploss profit:  -1.4499999999999886
+capital : 57.200000000000415
+call 148
+Trade close - stoploss profit:  -0.15000000000000568
+capital : 57.05000000000041
+put 124.9
+Trade close - secondLowerPeak profit:  -2.3500000000000085
+capital : 54.7000000000004
+put 123.2
+Trade close - stoploss profit:  0.7999999999999972
+capital : 55.5000000000004
+call 151.15
+Trade close - stoploss profit:  -1.450000000000017
+capital : 54.05000000000038
+put 125
+Trade close - stoploss profit:  0.29999999999999716
+capital : 54.35000000000038
+call 143.25
+Trade close - stoploss profit:  -0.5999999999999943
+capital : 53.750000000000384
+call 145.1
+Trade close - stoploss profit:  0.09999999999999432
+capital : 53.85000000000038
+put 129.45
+Trade close - stoploss profit:  -1.3499999999999943
+capital : 52.500000000000384
+put 129.4
+Trade close - stoploss profit:  0.5999999999999943
+capital : 53.10000000000038
+call 142.55
+Trade close - secondLowerPeak profit:  2.0999999999999943
+capital : 55.20000000000037
+put 129.3
+Trade close - stoploss profit:  -0.20000000000001705
+capital : 55.000000000000355
+call 115.6
+Trade close - secondLowerPeak profit:  0.8000000000000114
+capital : 55.80000000000037
+put 150.4
+Trade close - stoploss profit:  1.549999999999983
+capital : 57.35000000000035
+call 115.8
+Trade close - stoploss profit:  1.9000000000000057
+capital : 59.250000000000355
+put 153.9
+Trade close - stoploss profit:  0.549999999999983
+capital : 59.80000000000034
+call 107.35
+Trade close - stoploss profit:  -2.049999999999997
+capital : 57.75000000000034
+call 101.15
+Trade close - stoploss profit:  -0.5500000000000114
+capital : 57.20000000000033
+call 98.6
+Trade close - stoploss profit:  0.05000000000001137
+capital : 57.25000000000034
+call 100
+Trade close - stoploss profit:  -1.0999999999999943
+capital : 56.15000000000035
+put 156.3
+Trade close - stoploss profit:  -0.9000000000000057
+capital : 55.25000000000034
+call 98.9
+Trade close - stoploss profit:  -0.75
+capital : 54.50000000000034
+call 98.4
+Trade close - stoploss profit:  0.6999999999999886
+capital : 55.20000000000033
+put 124.5
+Trade close - stoploss profit:  0.09999999999999432
+capital : 55.300000000000324
+call 124.1
+Trade close - stoploss profit:  -2.049999999999997
+capital : 53.25000000000033
+call 122.9
+Trade close - secondLowerPeak profit:  2.1499999999999915
+capital : 55.40000000000032
+put 123.4
+Trade close - stoploss profit:  -0.20000000000000284
+capital : 55.200000000000315
+call 101
+Trade close - secondLowerPeak profit:  1.7000000000000028
+capital : 56.90000000000032
+put 148.75
+Trade close - stoploss profit:  -0.4000000000000057
+capital : 56.50000000000031
+call 100.45
+Trade close - stoploss profit:  -0.45000000000000284
+capital : 56.05000000000031
+call 101
+Trade close - stoploss profit:  0.5999999999999943
+capital : 56.650000000000304
+put 147.35
+Trade close - stoploss profit:  -0.44999999999998863
+capital : 56.200000000000315
+put 150.25
+Trade close - stoploss profit:  1.1500000000000057
+capital : 57.35000000000032
+call 100.4
+Trade close - stoploss profit:  -1.5500000000000114
+capital : 55.80000000000031
+put 151
+Trade close - stoploss profit:  -1
+capital : 54.80000000000031
+put 150.65
+Trade close - stoploss profit:  0.09999999999999432
+capital : 54.900000000000304
+call 100.1
+Trade close - stoploss profit:  -2.049999999999997
+capital : 52.85000000000031
+put 150.1
+Trade close - stoploss profit:  -0.09999999999999432
+capital : 52.75000000000031
+call 100.35
+Trade close - stoploss profit:  -0.3499999999999943
+capital : 52.40000000000032
+put 150.95
+Trade close - stoploss profit:  -0.3499999999999943
+capital : 52.050000000000324
+call 99.7
+Trade close - stoploss profit:  -0.25
+capital : 51.800000000000324
+put 148.6
+Trade close - stoploss profit:  -1.5999999999999943
+capital : 50.20000000000033
+put 146.7
+Trade close - stoploss profit:  -0.6999999999999886
+capital : 49.50000000000034
+call 103.6
+Trade close - stoploss profit:  -0.6499999999999915
+capital : 48.85000000000035
+put 144
+Trade close - stoploss profit:  0.5
+capital : 49.35000000000035
+call 103.45
+Trade close - secondLowerPeak profit:  2
+capital : 51.35000000000035
+put 141
+Trade close - stoploss profit:  -1
+capital : 50.35000000000035
+call 106
+Trade close - stoploss profit:  -1.6500000000000057
+capital : 48.700000000000344
+call 105.3
+Trade close - stoploss profit:  -0.5
+capital : 48.200000000000344
+call 106
+Trade close - secondLowerPeak profit:  0.9000000000000057
+capital : 49.10000000000035
+put 125.95
+Trade close - stoploss profit:  0.29999999999999716
+capital : 49.40000000000035
+call 121
+Trade close - stoploss profit:  -0.5
+capital : 48.90000000000035
+---data finished  -  shutting down---
