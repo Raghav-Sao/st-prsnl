@@ -1,7 +1,16 @@
 const fs = require('fs');
 const _ = require('lodash');
-const rawData = fs.readFileSync('./VBOData.json');
-const callData = _.groupBy(_.map(JSON.parse(fs.readFileSync('./call_12000.json')).data.candles, (data) => {
+const { getFibonaccitRacement, getLot, checkForPartialProfit, calculatePartialBookLotSize} = require('./utils.js');
+let capital = 50000;
+let holdingLot = null;
+let fibonacciUpperLevel = [];
+let fibonacciLowerLevel = [];
+let partialBookedProfitCount = 0;
+const checkFotTodayData = true;
+const rawData = checkFotTodayData ? fs.readFileSync('./toadysNiftMovement.json'): fs.readFileSync('./VBOData.json');
+const callPriceRawData = checkFotTodayData ? fs.readFileSync('./todaysNiftyCallPriceData.json') : fs.readFileSync('./call_12000.json');
+const putPriceRawData = checkFotTodayData ? fs.readFileSync('./todaysNiftyPutPriceData.json') : fs.readFileSync('./put_12000.json');
+const callData = _.groupBy(_.map(JSON.parse(callPriceRawData).data.candles, (data) => {
     return {
         time: data[0],
         open: Number(data[1]),
@@ -11,7 +20,7 @@ const callData = _.groupBy(_.map(JSON.parse(fs.readFileSync('./call_12000.json')
     }
 }), 'time');
 
-const putData = _.groupBy(_.map(JSON.parse(fs.readFileSync('./put_12000.json')).data.candles, (data) => {
+const putData = _.groupBy(_.map(JSON.parse(putPriceRawData).data.candles, (data) => {
     return {
         time: data[0],
         open: Number(data[1]),
@@ -36,7 +45,6 @@ const {
         candles = []
     } = {},
 } = parsedData;
-console.log(candles.length);
 
 const percentageChange = (final, initial) => {
     return ((final - initial)/initial)*100
@@ -60,48 +68,83 @@ const startTrade = candles => {
                 if(!tradeType && close > currentORHigh && hour != 15 && (prevClose <= currentORHigh)) {
                     tradeType = 'ORBO';
                     tradeStartedPrice = callData[timeStamp][0].close;
-                    console.log(`OR Break out done ^^^^^^^^^^^ ${timeStamp}  - ${tradeStartedPrice}`);
+                    const { lot, price } = getLot(capital, tradeStartedPrice, 75);
+                    capital = capital - price;
+                    holdingLot = lot;
+                    console.log(`OR Break out done ^^^^^^^^^^^ ${timeStamp}  - ${tradeStartedPrice} buying ${holdingLot} lot in ${tradeStartedPrice} price with total ${price} investing`);
 
                 } else if(!tradeType && close < currentORLow && hour !== 15  && (prevClose >= currentORLow)) {
                     tradeType =  'ORBD';
                     tradeStartedPrice = putData[timeStamp][0].close;
-                    console.log(`OR Break down done ^^^^^^^^^^^ ${timeStamp}  - ${tradeStartedPrice}`);
+                    const { lot, price } = getLot(capital, tradeStartedPrice, 75);
+                    capital = capital - price;
+                    holdingLot = lot;
+                    console.log(`OR Break down done ^^^^^^^^^^^ ${timeStamp}  - ${tradeStartedPrice}  buying ${holdingLot} lot in ${tradeStartedPrice} price total ${price} investing`);
                 } else if(tradeType === 'ORBO') {
+                    const currentOptionPrice = callData[timeStamp][0].close;
                     const margin = callData[timeStamp][0].close - tradeStartedPrice;
                     if(close <= currentORHigh) {
-                        const percentageProfit = percentageChange(callData[timeStamp][0].close, tradeStartedPrice);
-                        console.log(`********EXIT from trade upside *********** at ${hour}: ${minute} -> ${percentageProfit}`)
+                        const percentageProfit = percentageChange(currentOptionPrice, tradeStartedPrice);
+                        capital = capital + currentOptionPrice * holdingLot * 75;
+                        console.log(`********EXIT from trade upside *********** at ${hour}: ${minute} -> percentageProfit is${percentageProfit}, selling ${holdingLot} lots in ${currentOptionPrice} price, available capital ${capital}`);
+                        holdingLot = null;
                         tradeType = null;
                         profit += percentageProfit;
-                    } 
+                        partialBookedProfitCount = 0;
+                    } else if(partialBookedProfitCount === 0) {
+                        const canBook = checkForPartialProfit(close, fibonacciUpperLevel, partialBookedProfitCount, true);
+                        if(canBook) {
+                            const partialBookLot = calculatePartialBookLotSize(holdingLot);
+                            capital = capital + partialBookLot * 75 * currentOptionPrice;
+                            holdingLot = holdingLot - partialBookLot;
+                            partialBookedProfitCount = partialBookedProfitCount + 1;
+                            console.log(`booking ${partialBookedProfitCount} time partial lot with ${partialBookLot} lot, now capital is ${capital} and holdingLot is ${holdingLot}`)
+                        }
+                    }
                 } else if(tradeType === 'ORBD') {
                     const margin = putData[timeStamp][0].close - tradeStartedPrice;
-
+                    const currentOptionPrice = putData[timeStamp][0].close;
                     if(close >= currentORLow) {
-                        const percentageProfit = percentageChange(putData[timeStamp][0].close, tradeStartedPrice);
-                        console.log(`********EXIT from trade downside*********** at ${hour}: ${minute}  -> ${percentageProfit}`)
-                        console.log(tradeType);
+                        const percentageProfit = percentageChange(currentOptionPrice, tradeStartedPrice);
+                        capital = capital + currentOptionPrice * holdingLot * 75;
+                        console.log(`********EXIT from trade downside ${tradeType}*********** at ${hour}: ${minute}  -> ${percentageProfit} selling ${holdingLot} lots in ${currentOptionPrice} price, available capital ${capital}`);
+                        holdingLot = null;
                         tradeType = null;
-                        profit += percentageProfit;  
+                        profit += percentageProfit;
+                        partialBookedProfitCount = 0;
+                    } else if(partialBookedProfitCount < 3) {
+                        const canBook = checkForPartialProfit(close, fibonacciLowerLevel, partialBookedProfitCount, false);
+                        if(canBook) {
+                            const partialBookLot = calculatePartialBookLotSize(holdingLot);
+                            capital = capital + partialBookLot * 75 * currentOptionPrice;
+                            holdingLot = holdingLot - partialBookLot;
+                            partialBookedProfitCount = partialBookedProfitCount + 1;
+                            console.log(`booking ${partialBookedProfitCount} time partial lot with ${partialBookLot} lot in ${currentOptionPrice} price, now capital is ${capital} and holdingLot is ${holdingLot}`)
+                        }
                     }
                 }
-                if( hour === 15 && minute > 0 ) {
+                if( hour === 15 && minute > 10 ) {
                     if(tradeType === 'ORBO') {
-                        const percentageProfit = percentageChange(callData[timeStamp][0].close , tradeStartedPrice);
+                        const currentOptionPrice = callData[timeStamp][0].close;
+                        const percentageProfit = percentageChange(currentOptionPrice , tradeStartedPrice);
                         profit += percentageProfit;
-                        console.log(`last profit  ${percentageProfit}`)
+                        console.log(`last profit  ${percentageProfit} and selling ${holdingLot} lots in ${currentOptionPrice} price, available capital ${capital}`);
+                        capital = capital + currentOptionPrice * holdingLot;
                     } else if(tradeType === 'ORBD'){
-                        const percentageProfit = percentageChange(putData[timeStamp][0].close, tradeStartedPrice);
+                        const currentOptionPrice = putData[timeStamp][0].close;
+                        const percentageProfit = percentageChange(currentOptionPrice, tradeStartedPrice);
                         profit += percentageProfit;
-                        console.log(`last profit  ${percentageProfit}`)
+                        capital = capital + currentOptionPrice * holdingLot;
+                        console.log(`last profit  ${percentageProfit} selling ${holdingLot} lots in ${currentOptionPrice} price, available capital ${capital}`);
                     }
                     console.log(`*************** Day End with ${profit} profit***********`)
                     tradeType = null;
                     currentORHigh = null;
                     currentORLow = null;
-
+                    holdingLot = null;
                     totalProfit = totalProfit + profit;
                     profit = 0;
+                    partialBookedProfitCount = 0;
                 }
                 prevClose = close;
             } else {
@@ -114,6 +157,11 @@ const startTrade = candles => {
                     currentDate = dateValue;
                     profit = 0;
                     tradeType = null;
+                    const range = high - low;
+                    fibonacciUpperLevel = getFibonaccitRacement(low, range, true);
+                    fibonacciLowerLevel = getFibonaccitRacement(high, range, false);
+                    console.log("fibonacciLevel for today is", '\n', fibonacciUpperLevel, '\n', fibonacciLowerLevel, '\n\n\n\n\n\n\n');
+                    partialBookedProfitCount = 0;
                 }
             }
         }
