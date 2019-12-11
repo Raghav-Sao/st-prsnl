@@ -128,13 +128,13 @@ const startTrade = candles => {
                         const currentOptionPrice = callData[timeStamp][0].close;
                         const percentageProfit = percentageChange(currentOptionPrice , tradeStartedPrice);
                         profit += percentageProfit;
+                        capital = capital + currentOptionPrice * holdingLot * 75;
                         console.log(`last profit  ${percentageProfit} and selling ${holdingLot} lots in ${currentOptionPrice} price, available capital ${capital}`);
-                        capital = capital + currentOptionPrice * holdingLot;
                     } else if(tradeType === 'ORBD'){
                         const currentOptionPrice = putData[timeStamp][0].close;
                         const percentageProfit = percentageChange(currentOptionPrice, tradeStartedPrice);
                         profit += percentageProfit;
-                        capital = capital + currentOptionPrice * holdingLot;
+                        capital = capital + currentOptionPrice * holdingLot * 75;
                         console.log(`last profit  ${percentageProfit} selling ${holdingLot} lots in ${currentOptionPrice} price, available capital ${capital}`);
                     }
                     console.log(`*************** Day End with ${profit} profit***********`)
