@@ -6,6 +6,7 @@ let holdingLot = null;
 let fibonacciUpperLevel = [];
 let fibonacciLowerLevel = [];
 let partialBookedProfitCount = 0;
+let range = null;
 const checkFotTodayData = true;
 const rawData = checkFotTodayData ? fs.readFileSync('./toadysNiftMovement.json'): fs.readFileSync('./VBOData.json');
 const callPriceRawData = checkFotTodayData ? fs.readFileSync('./todaysNiftyCallPriceData.json') : fs.readFileSync('./call_12000.json');
@@ -92,7 +93,7 @@ const startTrade = candles => {
                         profit += percentageProfit;
                         partialBookedProfitCount = 0;
                     } else if(partialBookedProfitCount === 0) {
-                        const canBook = checkForPartialProfit(close, fibonacciUpperLevel, partialBookedProfitCount, true);
+                        const canBook = checkForPartialProfit(close, fibonacciUpperLevel, partialBookedProfitCount, true, range);
                         if(canBook) {
                             const partialBookLot = calculatePartialBookLotSize(holdingLot);
                             capital = capital + partialBookLot * 75 * currentOptionPrice;
@@ -113,7 +114,7 @@ const startTrade = candles => {
                         profit += percentageProfit;
                         partialBookedProfitCount = 0;
                     } else if(partialBookedProfitCount < 3) {
-                        const canBook = checkForPartialProfit(close, fibonacciLowerLevel, partialBookedProfitCount, false);
+                        const canBook = checkForPartialProfit(close, fibonacciLowerLevel, partialBookedProfitCount, false, range);
                         if(canBook) {
                             const partialBookLot = calculatePartialBookLotSize(holdingLot);
                             capital = capital + partialBookLot * 75 * currentOptionPrice;
@@ -137,7 +138,7 @@ const startTrade = candles => {
                         capital = capital + currentOptionPrice * holdingLot * 75;
                         console.log(`last profit  ${percentageProfit} selling ${holdingLot} lots in ${currentOptionPrice} price, available capital ${capital}`);
                     }
-                    console.log(`*************** Day End with ${profit} profit***********`)
+                    console.log(`*************** Day End with ${profit} profit*********** with capital of ${capital}`)
                     tradeType = null;
                     currentORHigh = null;
                     currentORLow = null;
@@ -149,6 +150,7 @@ const startTrade = candles => {
                 prevClose = close;
             } else {
                 console.log(hour, minute)
+                console.log(`total Profit ${totalProfit}`)
                 if( hour === 9 && minute === 15 ) {
                     console.log('\x1b[36m%s\x1b[0m',`-------------------- Starting For ${date.toDateString()} --------------------`);
                     console.log(`opening range for today is ${high - low} point ${high} -  ${low}`);
@@ -157,7 +159,7 @@ const startTrade = candles => {
                     currentDate = dateValue;
                     profit = 0;
                     tradeType = null;
-                    const range = high - low;
+                    range = high - low;
                     fibonacciUpperLevel = getFibonaccitRacement(low, range, true);
                     fibonacciLowerLevel = getFibonaccitRacement(high, range, false);
                     console.log("fibonacciLevel for today is", '\n', fibonacciUpperLevel, '\n', fibonacciLowerLevel, '\n\n\n\n\n\n\n');

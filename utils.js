@@ -9,8 +9,12 @@ module.exports.getLot = (capital, optionPrice, lotSize = 75) => {
     return {lot, price}
 }
 
-module.exports.checkForPartialProfit = (close, fibonaciLevel, calculatePartialBookLotSize, isUpperBreakout) => {
-    return isUpperBreakout ? fibonaciLevel[calculatePartialBookLotSize] < close : fibonaciLevel[calculatePartialBookLotSize] > close
+module.exports.checkForPartialProfit = (close, fibonaciLevel, calculatePartialBookLotSize, isUpperBreakout, range) => {
+    let additionalRange = 0;
+    if(range < 20) {
+        additionalRange = 3;
+    }
+    return isUpperBreakout ? fibonaciLevel[calculatePartialBookLotSize + additionalRange] < close : fibonaciLevel[calculatePartialBookLotSize + additionalRange] > close
 }
 
 module.exports.calculatePartialBookLotSize = (lotSize) => {
