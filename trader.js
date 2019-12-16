@@ -9,10 +9,10 @@ function trader(strategy) {
     }, Exchange.emitter);
 
     currentStrategyTrader.emitter.on('startTrade', (data) => {
-        const chartId = getChartId(data.tradeType);
+        const chart = getChart(data);
         const price = getPrice(data.tradeType, data.candle);
          Exchange.buy({
-            chartId,
+            chart,
             quantity: data.lots,
          });
         currentStrategyTrader.updateLots(data.lots);
@@ -22,10 +22,10 @@ function trader(strategy) {
     });
 
     const closeHandler = (data) => {
-        const chartId = getChartId(data.tradeType);
+        const chart = getChart(data);
         const price = getPrice(data.tradeType, data.candle);
         Exchange.sell({
-            chartId,
+            chart,
             quantity: data.lots,
         });
         const currentLots = currentStrategyTrader.getLots() - data.lots;
@@ -49,6 +49,6 @@ function trader(strategy) {
 
 
 const getPrice = (tradeType, candle) => tradeType === 'call' ? candle.callCandle.close : candle.putCandle.close;
-const getChartId = (tradeType) => tradeType === 'call' ? constants.CALL_WEEKLY : constants.PUT_WEEKLY;
+const getChart = (data) => data.tradeType === 'call' ? data.candle.callChart :  data.candle.putChart;
 
 trader(orbStrategy)

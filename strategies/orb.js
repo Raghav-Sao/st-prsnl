@@ -3,8 +3,8 @@ const EventEmitter = require('events');
 const emitter = new EventEmitter();
 
 const MAX_NUMBER = 200000;
-const defaultNoNewTradeTime = {minute: 10, hour: 15};
-const defaultShutDownTime = {minute: 20, hour: 15};
+const defaultNoNewTradeTime = {minute: 45, hour: 14};
+const defaultShutDownTime = {minute: 10, hour: 15};
 const defaultTickInterval = 3000;
 
 function orbStrategy({ capital, tickInterval, call, put, fibonacciPartialBooking, noNewTradeTime , shutDownTime}, Exchange) {
@@ -13,6 +13,8 @@ function orbStrategy({ capital, tickInterval, call, put, fibonacciPartialBooking
     tickInterval = tickInterval || defaultTickInterval;
 
     const tickEventName = getEventName(tickInterval);
+
+    // change this value to morning 9:15 candle incase of restart
     let orLow = -1*MAX_NUMBER;
     let orHigh = MAX_NUMBER;
     let activeTrade = null;
@@ -25,9 +27,9 @@ function orbStrategy({ capital, tickInterval, call, put, fibonacciPartialBooking
 
 
     const tradeStartCondition = (candle) => {
-        if (candle.close < orLow) {
+        if (candle.close < orLow && candle.previousClose >= orLow ) {
             return 'put';
-        } else if(candle.close > orHigh) {
+        } else if(candle.close > orHigh && candle.previousClose <= orHigh) {
             return 'call';
         }
     };
@@ -165,7 +167,7 @@ function orbStrategy({ capital, tickInterval, call, put, fibonacciPartialBooking
         }
         Exchange.removeListener(tickEventName, handler);
         fibonacciLevels = null;
-        tradeReset();
+        dayReset();
     }
 
     Exchange.on(tickEventName, handler);

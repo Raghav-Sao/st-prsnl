@@ -5,6 +5,8 @@ const _ =  require('lodash');
 var KiteTicker = require("kiteconnect").KiteTicker;
 const KiteConnect = require("kiteconnect").KiteConnect;
 const constants = require('./constants');
+const utils = require('./utils');
+
 let ACCESS_TOKEN;
 let PUBLIC_TOKEN;
 let REQUEST_TOKEN = process.argv[2];
@@ -33,15 +35,17 @@ kc.generateSession(REQUEST_TOKEN, constants.API_SECRET)
 function init() {   
     setInterval(async () => {
         const orders = await kc.getOrders();
-
         console.log(moment().format(""), )
-    }) 
+    });
+
     const ticker = new KiteTicker({
         api_key: constants.API_KEY,
         access_token: ACCESS_TOKEN,
     });
     ticker.autoReconnect(true, 10, 5)
     ticker.connect();
+
+    
     ticker.on("ticks", onTicks);
     ticker.on("connect", subscribe);
 
@@ -54,23 +58,41 @@ function init() {
     });
 
     let store = [];
+    let tick = 0;
+    let callChart = constants.CALL_WEEKLY;
+    let putChart = constants.PUT_WEEKLY;
+
     function onTicks(ticks) {
+
         const grouped = _.groupBy(ticks, 'instrument_token');
         const nifty = _.get(grouped[`${constants.NIFTY}`], 0) || store[store.length - 1][0];
-        const call = _.get(grouped[`${constants.CALL_WEEKLY}`], 0) || store[store.length - 1][1];
-        const put = _.get(grouped[`${constants.PUT_WEEKLY}`], 0) || store[store.length - 1][2];
+        const call = _.get(grouped[`${callChart.chartId}`], 0) || store[store.length - 1][1];
+        const put = _.get(grouped[`${putChart.chartId}`], 0) || store[store.length - 1][2];
         const raw = [nifty, call, put];
         const timestamp = ticks[0].timestamp;
+
         const transformed = _.map(raw, (tick) => {
             return {
                 last_price: tick.last_price,
                 timestamp: moment(timestamp).unix(),
             }
         });
+
+        if (tick === 0) {
+            tick++;
+            const callStrike = utils.getStrikeForOption({currentPrice: transformed[0].last_price, optionType: 'CALL'});
+            const putStrike = utils.getStrikeForOption({currentPrice: transformed[0].last_price, optionType: 'PUT'});
+            ticker.unsubscribe([callChart.chartId, putChart.chartId]);
+            callChart = constants.chartByStrike.call[callStrike];
+            putChart = constants.chartByStrike.put[putStrike];
+            ticker.subscribe([callChart.chartId, putChart.chartId]);
+        }
+
         if (store.length) {
             const firstTimeStamp = store[0][0].timestamp;
             const diff = transformed[0].timestamp - firstTimeStamp;
-            if (diff >= 60) {
+            // after 5 minutes create and emit candle
+            if (diff >= 60*5) {
                 createAndEmitCandle(store);
                 store = [];
             }
@@ -89,6 +111,8 @@ function init() {
             ...getCandle(nifty),
             callCandle: getCandle(call),
             putCandle: getCandle(put),
+            callChart,
+            putChart,
         };
         if(lastCandle) {
             candle.previousClose =  lastCandle.close;
@@ -104,7 +128,7 @@ function init() {
             close: dataArray[dataArray.length - 1].last_price,
             high: Math.max(..._.map(dataArray, 'last_price')),
             low: Math.min(..._.map(dataArray, 'last_price')),
-            time: dataArray[0].timestamp,
+            time: dataArray[0].timestamp*1000, // seconds to milliseconds
         } 
     }
 
@@ -120,10 +144,10 @@ function init() {
 
 module.exports = {
     emitter,
-    buy: async ({chartId, lots}) => {
+    buy: async ({chart, lots}) => {
        const trade = kc.placeOrder('regular', {
             exchange: 'NSE',
-            tradingsymbol: constants[chartId],
+            tradingsymbol: chart.symbol,
             quantity: lots,
             order_type: "NRML",
             product: "MIS",
@@ -131,10 +155,10 @@ module.exports = {
         });
         console.log(trade);
     },
-    sell: () => {
+    sell: async ({chart, lots}) => {
         const trade = kc.placeOrder('regular', {
             exchange: 'NSE',
-            tradingsymbol: constants[chartId],
+            tradingsymbol: chart.symbol,
             quantity: lots,
             order_type: "NRML",
             product: "MIS",
