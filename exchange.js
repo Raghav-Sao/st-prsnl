@@ -35,8 +35,8 @@ kc.generateSession(REQUEST_TOKEN, constants.API_SECRET)
 function init() {   
     setInterval(async () => {
         const orders = await kc.getOrders();
-        console.log(moment().format(""), )
-    });
+        console.log(moment().format(), orders )
+    }, 1000);
 
     const ticker = new KiteTicker({
         api_key: constants.API_KEY,
@@ -45,7 +45,7 @@ function init() {
     ticker.autoReconnect(true, 10, 5)
     ticker.connect();
 
-    
+
     ticker.on("ticks", onTicks);
     ticker.on("connect", subscribe);
 
