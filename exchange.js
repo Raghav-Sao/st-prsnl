@@ -1,6 +1,5 @@
 const EventEmitter = require('events');
 const emitter = new EventEmitter();
-const StockExchange = new EventEmitter();
 const moment = require('moment');
 const _ =  require('lodash');
 var KiteTicker = require("kiteconnect").KiteTicker;
@@ -8,12 +7,14 @@ const KiteConnect = require("kiteconnect").KiteConnect;
 const constants = require('./constants');
 let ACCESS_TOKEN;
 let PUBLIC_TOKEN;
+let REQUEST_TOKEN = process.argv[2];
+console.log('REQUEST_TOKEN', REQUEST_TOKEN);
 
 const kc = new KiteConnect({
 	api_key: constants.API_KEY
 });
 
-kc.generateSession(constants.REQUEST_TOKEN, constants.API_SECRET)
+kc.generateSession(REQUEST_TOKEN, constants.API_SECRET)
 	.then(function(response) {
         ACCESS_TOKEN = response.access_token;
         PUBLIC_TOKEN = response.public_token;
@@ -29,7 +30,12 @@ kc.generateSession(constants.REQUEST_TOKEN, constants.API_SECRET)
 
 
 
-function init() {    
+function init() {   
+    setInterval(async () => {
+        const orders = await kc.getOrders();
+
+        console.log(moment().format(""), )
+    }) 
     const ticker = new KiteTicker({
         api_key: constants.API_KEY,
         access_token: ACCESS_TOKEN,
@@ -50,7 +56,6 @@ function init() {
     let store = [];
     function onTicks(ticks) {
         const grouped = _.groupBy(ticks, 'instrument_token');
-        // console.log(grouped);
         const nifty = _.get(grouped[`${constants.NIFTY}`], 0) || store[store.length - 1][0];
         const call = _.get(grouped[`${constants.CALL_WEEKLY}`], 0) || store[store.length - 1][1];
         const put = _.get(grouped[`${constants.PUT_WEEKLY}`], 0) || store[store.length - 1][2];
@@ -62,11 +67,9 @@ function init() {
                 timestamp: moment(timestamp).unix(),
             }
         });
-        //console.log(transformed);
         if (store.length) {
             const firstTimeStamp = store[0][0].timestamp;
             const diff = transformed[0].timestamp - firstTimeStamp;
-            console.log('diff', diff);
             if (diff >= 60) {
                 createAndEmitCandle(store);
                 store = [];
@@ -91,7 +94,6 @@ function init() {
             candle.previousClose =  lastCandle.close;
         }   
         emitter.emit('5_minute_candle', candle);
-        console.log(candle);
         lastCandle = candle;
 
     }
@@ -118,6 +120,26 @@ function init() {
 
 module.exports = {
     emitter,
-    buy: () => null,
-    sell: () => null,
+    buy: async ({chartId, lots}) => {
+       const trade = kc.placeOrder('regular', {
+            exchange: 'NSE',
+            tradingsymbol: constants[chartId],
+            quantity: lots,
+            order_type: "NRML",
+            product: "MIS",
+            transaction_type: "BUY",
+        });
+        console.log(trade);
+    },
+    sell: () => {
+        const trade = kc.placeOrder('regular', {
+            exchange: 'NSE',
+            tradingsymbol: constants[chartId],
+            quantity: lots,
+            order_type: "NRML",
+            product: "MIS",
+            transaction_type: "SELL",
+        });
+        console.log(trade);
+    },
 }

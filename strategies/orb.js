@@ -21,6 +21,8 @@ function orbStrategy({ capital, tickInterval, call, put, fibonacciPartialBooking
     let fibonacciLevels;
     let currentCandle;
     let totalLots;
+    let fibonacciCrossing = -1;
+
 
     const tradeStartCondition = (candle) => {
         if (candle.close < orLow) {
@@ -67,6 +69,7 @@ function orbStrategy({ capital, tickInterval, call, put, fibonacciPartialBooking
             orLow = candle.low;
             orHigh = candle.high;
             fibonacciLevels = getFibonacciLevels(orHigh, orLow);
+            console.log('fibonacciLevels', fibonacciLevels);
         } else {
             if (!activeTrade && !isNoNewTradeTime({hour, minute}, noNewTradeTime)) {
                 activeTrade = tradeStartCondition(candle);
@@ -101,7 +104,14 @@ function orbStrategy({ capital, tickInterval, call, put, fibonacciPartialBooking
                 }
 
                 const currFibLevels = fibonacciLevels[activeTrade];
-                if (checkFibonacciCrossDown(currFibLevels, candle.close, candle.previousClose) || checkFibonacciCrossUp(currFibLevels, candle.close, candle.previousClose)) {
+                let crossing;
+                if (activeTrade === 'put') {
+                    crossing = checkFibonacciCrossDown(currFibLevels, candle.close, candle.previousClose, fibonacciCrossing);
+                } else {
+                    crossing = checkFibonacciCrossUp(currFibLevels, candle.close, candle.previousClose, fibonacciCrossing);
+                }
+                if (crossing) {
+                    fibonacciCrossing = crossing.crossingLevel;
                     emitter.emit("partialClose", {
                         candle,
                         lots:  Math.max(1, Math.floor(totalLots/5)),
@@ -123,6 +133,7 @@ function orbStrategy({ capital, tickInterval, call, put, fibonacciPartialBooking
         currentCandle = null;
         totalLots = 0;
         activeTrade = null;
+        fibonacciCrossing = -1;
     }
 
     const dayReset = () => {
@@ -212,20 +223,23 @@ function getEventName(milliseconds) {
 }
 
 const getFibonacciLevels = (high, low) => {
-    const range = high - low;
+    const range = Math.abs(high - low);
     const retracementLevel = [1.618, 2.618, 3.618, 4.236];
     return {
-        call: retracementLevel.map(( level) => high + range * level),
-        put: retracementLevel.map(( level) => low - range * level),
+        call: retracementLevel.map(( level) => low + (range * level)),
+        put: retracementLevel.map(( level) => high - (range * level)),
     };
 }
 
-const checkFibonacciCrossUp = (levels, price, previousPrice) => {
+const checkFibonacciCrossUp = (levels, price, previousPrice, fibonacciCrossing) => {
     let level = -1;
     for (let i = 0; i < levels.length; i++) {
         if (price > levels[i]) {
             level = i;
         }
+    }
+    if (level <= fibonacciCrossing) {
+        return false;
     }
 
     if (level > -1) {
@@ -238,12 +252,17 @@ const checkFibonacciCrossUp = (levels, price, previousPrice) => {
     return false;
 }
 
-const checkFibonacciCrossDown = (levels, price, previousPrice) => {
+const checkFibonacciCrossDown = (levels, price, previousPrice, fibonacciCrossing) => {
     let level = -1;
     for (let i = 0; i < levels.length; i++) {
         if (price < levels[i]) {
             level = i;
         }
+    }
+
+    console.log(level, fibonacciCrossing);
+    if (level <= fibonacciCrossing) {
+        return false;
     }
 
     if (level > -1) {
