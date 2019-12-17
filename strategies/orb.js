@@ -1,5 +1,6 @@
 const moment = require('moment');
 const EventEmitter = require('events');
+const fs = require('fs');
 const emitter = new EventEmitter();
 
 const MAX_NUMBER = 200000;
@@ -24,6 +25,7 @@ function orbStrategy({ capital, tickInterval, call, put, fibonacciPartialBooking
     let currentCandle;
     let totalLots;
     let fibonacciCrossing = -1;
+    let candleCount = 0;
 
 
     const tradeStartCondition = (candle) => {
@@ -52,6 +54,18 @@ function orbStrategy({ capital, tickInterval, call, put, fibonacciPartialBooking
         const time = moment(candle.time);
         const hour = time.hours();
         const minute = time.minutes();
+        /**
+         * incase of restart at a later time pick high,low from file
+         */
+        if (candleCount === 0 && (hour > 9 || minute > 15))  {
+            // readFrom files;
+            const todaysHighLow = JSON.parse(fs.readFileSync('./todaysHighLow.json'));
+            orLow = todaysHighLow.orLow;
+            orHigh  = todaysHighLow.orHigh;
+            fibonacciLevels = todaysHighLow.fibonacciLevels;
+        }
+        candleCount++; 
+
         if (isShutDownTime({hour, minute}, shutDownTime)) {
             if (activeTrade) {
                 emitter.emit("endTrade", {
@@ -71,6 +85,14 @@ function orbStrategy({ capital, tickInterval, call, put, fibonacciPartialBooking
             orLow = candle.low;
             orHigh = candle.high;
             fibonacciLevels = getFibonacciLevels(orHigh, orLow);
+            const saveData =  {
+                orLow,
+                orHigh,
+                fibonacciLevels,
+                time: candle.time,
+            };
+            fs.writeFileSync('./todaysHighLow.json', JSON.stringify(saveData));
+
             console.log('fibonacciLevels', fibonacciLevels);
         } else {
             if (!activeTrade && !isNoNewTradeTime({hour, minute}, noNewTradeTime)) {

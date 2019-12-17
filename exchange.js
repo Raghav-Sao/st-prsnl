@@ -34,8 +34,13 @@ kc.generateSession(REQUEST_TOKEN, constants.API_SECRET)
 
 function init() {   
     setInterval(async () => {
-        const orders = await kc.getOrders();
-        console.log(moment().format(), orders )
+        const orders = kc.getOrders().then((data) => {
+            //console.log(moment().format(), orders )
+        }).catch((e) => {
+            console.log('session expired');
+            console.log(e);
+        });   
+        
     }, 1000);
 
     const ticker = new KiteTicker({
@@ -58,12 +63,20 @@ function init() {
     });
 
     let store = [];
-    let tick = 0;
+    let tickCount = 0;
     let callChart = constants.CALL_WEEKLY;
     let putChart = constants.PUT_WEEKLY;
 
     function onTicks(ticks) {
-
+        // timestamp in ticks is in second, always convert to millisecond for conversion
+        if  (tickCount === 0) {
+            // ignore first tick when not multiple of 5minute
+            // otherwise candle will shift
+            if ((ticks[0].timestamp)%300 !== 0) {
+                console.log('ignoring initial ticks at - ', moment((ticks[0].timestamp)*1000).format());
+                return;
+            }
+        }
         const grouped = _.groupBy(ticks, 'instrument_token');
         const nifty = _.get(grouped[`${constants.NIFTY}`], 0) || store[store.length - 1][0];
         const call = _.get(grouped[`${callChart.chartId}`], 0) || store[store.length - 1][1];
@@ -78,8 +91,8 @@ function init() {
             }
         });
 
-        if (tick === 0) {
-            tick++;
+        if (tickCount === 0) {
+            tickCount++;
             const callStrike = utils.getStrikeForOption({currentPrice: transformed[0].last_price, optionType: 'CALL'});
             const putStrike = utils.getStrikeForOption({currentPrice: transformed[0].last_price, optionType: 'PUT'});
             ticker.unsubscribe([callChart.chartId, putChart.chartId]);
@@ -92,7 +105,7 @@ function init() {
             const firstTimeStamp = store[0][0].timestamp;
             const diff = transformed[0].timestamp - firstTimeStamp;
             // after 5 minutes create and emit candle
-            if (diff >= 60*5) {
+            if (diff >= 300) {
                 createAndEmitCandle(store);
                 store = [];
             }
