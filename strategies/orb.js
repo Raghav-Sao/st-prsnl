@@ -51,7 +51,7 @@ function orbStrategy({ capital, tickInterval, call, put, fibonacciPartialBooking
 
     const handler = (candle) => {
         currentCandle = candle;
-        const time = moment(candle.time);
+        const time = moment(candle.time).utcOffset("+05:30");
         const hour = time.hours();
         const minute = time.minutes();
         /**

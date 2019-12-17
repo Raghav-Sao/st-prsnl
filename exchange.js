@@ -78,7 +78,7 @@ function init() {
             // otherwise candle will shift
             console.log(ticks[0].timestamp, secondsTimeStamp%300);
             if ( secondsTimeStamp%300 !== 0) {
-                console.log('ignoring initial ticks at - ', moment((secondsTimeStamp)*1000).format());
+                console.log('ignoring initial ticks at - ', moment((secondsTimeStamp)*1000).utcOffset("+05:30").format());
                 return;
             }
         }
