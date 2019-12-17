@@ -43,7 +43,7 @@ function init() {
                 text: 'URGENT!! SESSION EXPIRED',
                 subject: 'URGENT!! SESSION EXPIRED'
             });
-        });   
+        });         
         
     }, 1000);
 
@@ -98,10 +98,8 @@ function init() {
 
         if (tickCount === 0) {
             tickCount++;
-            const callStrike = 12050;
-            //utils.getStrikeForOption({currentPrice: transformed[0].last_price, optionType: 'CALL'});
-            const putStrike = 12100;
-            //utils.getStrikeForOption({currentPrice: transformed[0].last_price, optionType: 'PUT'});
+            const callStrike = utils.getStrikeForOption({currentPrice: transformed[0].last_price, optionType: 'CALL'});
+            const putStrike = utils.getStrikeForOption({currentPrice: transformed[0].last_price, optionType: 'PUT'});
             console.log('transformed[0].last_price', transformed[0].last_price);
             console.log('STRIKES')
             console.log(callStrike, putStrike);
@@ -168,34 +166,35 @@ function init() {
     }
 }
 
+
+const buy = async ({chart, lots}) => {
+    const trade = await kc.placeOrder('regular', {
+         exchange: 'NFO',
+         tradingsymbol: chart.symbol,
+         quantity: lots,
+         order_type: "MARKET",
+         product: "MIS",
+         transaction_type: "BUY",
+     });
+     console.log(trade);
+     return trade;
+ };
+
+ const sell = async ({chart, lots}) => {
+    const trade = await kc.placeOrder('regular', {
+        exchange: 'NFO',
+        tradingsymbol: chart.symbol,
+        quantity: lots,
+        order_type: "MARKET",
+        product: "MIS",
+        transaction_type: "SELL",
+    });
+    console.log(trade);
+    return trade;
+};
+
 module.exports = {
     emitter,
-    buy: async ({chart, lots}) => {
-       const trade = kc.placeOrder('regular', {
-            exchange: 'NSE',
-            tradingsymbol: chart.symbol,
-            quantity: lots,
-            order_type: "NRML",
-            product: "MIS",
-            transaction_type: "BUY",
-        });
-        utils.sendEmail({
-            text: `Bought ${chart.symbol}, lots - ${lots}`
-        });
-        console.log(trade);
-    },
-    sell: async ({chart, lots}) => {
-        const trade = kc.placeOrder('regular', {
-            exchange: 'NSE',
-            tradingsymbol: chart.symbol,
-            quantity: lots,
-            order_type: "NRML",
-            product: "MIS",
-            transaction_type: "SELL",
-        });
-        utils.sendEmail({
-            text: `Sold ${chart.symbol}, lots - ${lots}`
-        });
-        console.log(trade);
-    },
+    buy,
+    sell,
 }

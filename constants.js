@@ -11,7 +11,7 @@ module.exports = {
     CALL_WEEKLY: {chartId: 11298050, symbol: "NIFTY19D1912100CE"},
     PUT_WEEKLY: {chartId: 11296770, symbol: "NIFTY19D1912000PE"},
     NIFTY: charts.NIFTY,
-    chartByStrike: {
+    chartByStrike:  {
         call: {
             11950: {
                 chartId: 11296002,
@@ -32,6 +32,14 @@ module.exports = {
             12150: {
                 chartId: 11298562,
                 symbol: 'NIFTY19D1912150CE',
+            },
+            12200: {
+                chartId: 11299586,
+                symbol: 'NIFTY19D1912200CE'
+            },
+            12250: {
+                chartId: 11300098,
+                symbol: 'NIFTY19D1912250CE'
             },
         },
         put: {
@@ -55,6 +63,15 @@ module.exports = {
                 chartId: 11298818,
                 symbol: 'NIFTY19D1912150PE',
             },
+            12200: {
+                chartId: 11299842,
+                symbol: 'NIFTY19D1912200PE'
+            },
+            12250: {
+                chartId: 11300354,
+                symbol: 'NIFTY19D1912250PE'
+            },
+
         }
     }
 
