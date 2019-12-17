@@ -39,6 +39,10 @@ function init() {
         }).catch((e) => {
             console.log('session expired');
             console.log(e);
+            utils.sendEmail({
+                text: 'URGENT!! SESSION EXPIRED',
+                subject: 'URGENT!! SESSION EXPIRED'
+            });
         });   
         
     }, 1000);
@@ -95,6 +99,8 @@ function init() {
             tickCount++;
             const callStrike = utils.getStrikeForOption({currentPrice: transformed[0].last_price, optionType: 'CALL'});
             const putStrike = utils.getStrikeForOption({currentPrice: transformed[0].last_price, optionType: 'PUT'});
+            console.log('STRIKES')
+            console.log(callStrike, putStrike);
             ticker.unsubscribe([callChart.chartId, putChart.chartId]);
             callChart = constants.chartByStrike.call[callStrike];
             putChart = constants.chartByStrike.put[putStrike];
@@ -166,6 +172,9 @@ module.exports = {
             product: "MIS",
             transaction_type: "BUY",
         });
+        utils.sendEmail({
+            text: `Bought ${chart.symbol}, lots - ${lots}`
+        });
         console.log(trade);
     },
     sell: async ({chart, lots}) => {
@@ -176,6 +185,9 @@ module.exports = {
             order_type: "NRML",
             product: "MIS",
             transaction_type: "SELL",
+        });
+        utils.sendEmail({
+            text: `Sold ${chart.symbol}, lots - ${lots}`
         });
         console.log(trade);
     },
