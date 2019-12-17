@@ -1,5 +1,5 @@
 const orbStrategy = require('./strategies/orb');
-const Exchange = require('./testExchange');
+const Exchange = require('./exchange');
 const constants = require('./constants');
 const utils = require('./utils');
 
