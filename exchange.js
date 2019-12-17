@@ -53,10 +53,8 @@ function init() {
     });
     ticker.autoReconnect(true, 10, 5)
     ticker.connect();
-
-
-    ticker.on("ticks", onTicks);
     ticker.on("connect", subscribe);
+    ticker.on("ticks", onTicks);
 
     ticker.on("noreconnect", function() {
         console.log("noreconnect");
@@ -73,11 +71,14 @@ function init() {
 
     function onTicks(ticks) {
         // timestamp in ticks is in second, always convert to millisecond for conversion
+        // console.log(ticks);
+        const secondsTimeStamp = moment(ticks[0].timestamp).unix();
         if  (tickCount === 0) {
             // ignore first tick when not multiple of 5minute
             // otherwise candle will shift
-            if ((ticks[0].timestamp)%300 !== 0) {
-                console.log('ignoring initial ticks at - ', moment((ticks[0].timestamp)*1000).format());
+            console.log(ticks[0].timestamp, secondsTimeStamp%300);
+            if ( secondsTimeStamp%300 !== 0) {
+                console.log('ignoring initial ticks at - ', moment((secondsTimeStamp)*1000).format());
                 return;
             }
         }
@@ -97,19 +98,25 @@ function init() {
 
         if (tickCount === 0) {
             tickCount++;
-            const callStrike = utils.getStrikeForOption({currentPrice: transformed[0].last_price, optionType: 'CALL'});
-            const putStrike = utils.getStrikeForOption({currentPrice: transformed[0].last_price, optionType: 'PUT'});
+            const callStrike = 12050;
+            //utils.getStrikeForOption({currentPrice: transformed[0].last_price, optionType: 'CALL'});
+            const putStrike = 12100;
+            //utils.getStrikeForOption({currentPrice: transformed[0].last_price, optionType: 'PUT'});
+            console.log('transformed[0].last_price', transformed[0].last_price);
             console.log('STRIKES')
             console.log(callStrike, putStrike);
             ticker.unsubscribe([callChart.chartId, putChart.chartId]);
             callChart = constants.chartByStrike.call[callStrike];
             putChart = constants.chartByStrike.put[putStrike];
+            console.log('charts');
+            console.log(callChart, putChart);
             ticker.subscribe([callChart.chartId, putChart.chartId]);
         }
 
         if (store.length) {
             const firstTimeStamp = store[0][0].timestamp;
             const diff = transformed[0].timestamp - firstTimeStamp;
+
             // after 5 minutes create and emit candle
             if (diff >= 300) {
                 createAndEmitCandle(store);
@@ -136,7 +143,7 @@ function init() {
         if(lastCandle) {
             candle.previousClose =  lastCandle.close;
         }   
-        emitter.emit('5_minute_candle', candle);
+        emitter.emit('5-minute-candle', candle);
         lastCandle = candle;
 
     }
@@ -154,10 +161,10 @@ function init() {
 
 
     function subscribe() {
-        var items = [constants.NIFTY, constants.CALL_WEEKLY, constants.PUT_WEEKLY];
+        var items = [constants.NIFTY, constants.CALL_WEEKLY.chartId, constants.PUT_WEEKLY.chartId];
         console.log('subscribed');
         ticker.subscribe(items);
-        // ticker.setMode(ticker.modeFull, items);
+        ticker.setMode(ticker.modeFull, items);
     }
 }
 

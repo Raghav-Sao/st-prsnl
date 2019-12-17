@@ -57,12 +57,17 @@ function orbStrategy({ capital, tickInterval, call, put, fibonacciPartialBooking
         /**
          * incase of restart at a later time pick high,low from file
          */
+        // console.log(candle);
+        // console.log(hour, minute);
+        // console.log(candleCount);
         if (candleCount === 0 && (hour > 9 || minute > 15))  {
             // readFrom files;
             const todaysHighLow = JSON.parse(fs.readFileSync('./todaysHighLow.json'));
+            console.log('reading from file......');
             orLow = todaysHighLow.orLow;
             orHigh  = todaysHighLow.orHigh;
             fibonacciLevels = todaysHighLow.fibonacciLevels;
+            console.log(orLow, orHigh);
         }
         candleCount++; 
 
