@@ -188,7 +188,7 @@ const buy = async ({chart, lots}) => {
     const trade = await kc.placeOrder('regular', {
          exchange: 'NFO',
          tradingsymbol: chart.symbol,
-         quantity: lots,
+         quantity: lots*75,
          order_type: "MARKET",
          product: "MIS",
          transaction_type: "BUY",
@@ -198,10 +198,12 @@ const buy = async ({chart, lots}) => {
  };
 
  const sell = async ({chart, lots}) => {
+     console.log('chart')
+     console.log(chart, lots);
     const trade = await kc.placeOrder('regular', {
         exchange: 'NFO',
         tradingsymbol: chart.symbol,
-        quantity: lots,
+        quantity: lots*75,
         order_type: "MARKET",
         product: "MIS",
         transaction_type: "SELL",
