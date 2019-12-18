@@ -185,6 +185,8 @@ function init() {
 
 
 const buy = async ({chart, lots}) => {
+    console.log('chart')
+    console.log(chart, lots);
     const trade = await kc.placeOrder('regular', {
          exchange: 'NFO',
          tradingsymbol: chart.symbol,
