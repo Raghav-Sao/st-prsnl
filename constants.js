@@ -8,8 +8,8 @@ module.exports = {
     API_KEY: "a062yq2tywqk1e4j",
     API_SECRET:"im93kns7sjst8ylg8y7ubypjtmz4dqgr",
     REQUEST_TOKEN: "fF0QTR6hAJzSyAFnkjWUL2iKT5wNdyzb",
-    CALL_WEEKLY: {chartId: 11298050, symbol: "NIFTY19D1912100CE"},
-    PUT_WEEKLY: {chartId: 11296770, symbol: "NIFTY19D1912000PE"},
+    CALL_WEEKLY: {chartId: 11300098, symbol: "NIFTY19D1912250CE"},
+    PUT_WEEKLY: {chartId: 11298818, symbol: "NIFTY19D1912150PE"},
     NIFTY: charts.NIFTY,
     chartByStrike:  {
         call: {

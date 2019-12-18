@@ -41,7 +41,7 @@ function init() {
             console.log(e);
             utils.sendEmail({
                 text: 'URGENT!! SESSION EXPIRED',
-                subject: 'URGENT!! SESSION EXPIRED'
+                subject: `URGENT!! SESSION EXPIRED \n ${JSON.stringify(e)}`
             });
         });         
         
@@ -74,6 +74,7 @@ function init() {
         // console.log(ticks);
         const secondsTimeStamp = moment(ticks[0].timestamp).unix();
         if  (tickCount === 0) {
+            console.log('ticks.length', ticks);
             // ignore first tick when not multiple of 5minute
             // otherwise candle will shift
             console.log(ticks[0].timestamp, secondsTimeStamp%300);
@@ -81,6 +82,7 @@ function init() {
                 console.log('ignoring initial ticks at - ', moment((secondsTimeStamp)*1000).utcOffset("+05:30").format());
                 return;
             }
+            console.log('Candle creation starts', ticks);
         }
         const grouped = _.groupBy(ticks, 'instrument_token');
         const nifty = _.get(grouped[`${constants.NIFTY}`], 0) || store[store.length - 1][0];
