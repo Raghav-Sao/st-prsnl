@@ -45,14 +45,16 @@ function init() {
             });
         });         
         
-    }, 1000);
+    }, 10*1000);
 
     const ticker = new KiteTicker({
         api_key: constants.API_KEY,
         access_token: ACCESS_TOKEN,
     });
+
     ticker.autoReconnect(true, 10, 5)
     ticker.connect();
+
     ticker.on("connect", subscribe);
     ticker.on("ticks", onTicks);
 
@@ -85,6 +87,7 @@ function init() {
         lastTicksGrouped = grouped;
 
         const secondsTimeStamp = moment(ticks[0].timestamp).unix();
+
         if  (tickCount === 0) {
             console.log('grouped', grouped);
             console.log('ticks.length', ticks);
@@ -113,10 +116,8 @@ function init() {
 
         if (tickCount === 0) {
             tickCount++;
-            const callStrike = 12150;
-            //utils.getStrikeForOption({currentPrice: transformed[0].last_price, optionType: 'CALL'});
-            const putStrike = 12200;
-            //utils.getStrikeForOption({currentPrice: transformed[0].last_price, optionType: 'PUT'});
+            const callStrike = utils.getStrikeForOption({currentPrice: transformed[0].last_price, optionType: 'CE'});
+            const putStrike = utils.getStrikeForOption({currentPrice: transformed[0].last_price, optionType: 'PE'});
             console.log('transformed[0].last_price', transformed[0].last_price);
             console.log('STRIKES')
             console.log(callStrike, putStrike);

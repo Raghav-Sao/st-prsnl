@@ -28,10 +28,10 @@ const putData = _.groupBy(_.map(JSON.parse(fs.readFileSync('./testData/pe_12000.
 
 function testExchange() {
     const buy = () => {
-
+        return Promise.resolve("wew");
     };
     const sell = () => {
-
+        return  Promise.resolve("wew");
     };
 
     const emitData = (index, previousCandlePrice) => {

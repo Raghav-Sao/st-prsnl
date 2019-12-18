@@ -6,7 +6,7 @@ const mg = mailgun({apiKey: apiKey, domain: DOMAIN});
 
 const sendEmail = ({text, subject}) => {
     const data = {
-        from: 'St-option <me@samples.mailgun.org>',
+        from: 'Trader <me@samples.mailgun.org>',
         to: 'saoraghav@gmail.com, saoraghavendra@gmail.com, rishabdev919@gmail.com',
         subject: subject || 'Algo Trading Update',
         text

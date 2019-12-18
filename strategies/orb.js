@@ -28,6 +28,7 @@ function orbStrategy({ capital, tickInterval, call, put, fibonacciPartialBooking
     let candleCount = 0;
 
 
+
     const tradeStartCondition = (candle) => {
         if (candle.close < orLow && candle.previousClose >= orLow ) {
             return 'put';
@@ -57,11 +58,10 @@ function orbStrategy({ capital, tickInterval, call, put, fibonacciPartialBooking
         /**
          * incase of restart at a later time pick high,low from file
          */
-        // console.log(candle);
-        // console.log(hour, minute);
+        console.log(`hour - ${hour} minute ${minute}`);
         console.log('candleCount', candleCount);
         console.log('5_min_candle', candle);
-        if (candleCount === 0 && (hour > 9 || minute > 15))  {
+        if (candleCount === 0 && (hour > 9 || (hour === 9 && minute > 15)))  {
             // readFrom files;
             const todaysHighLow = JSON.parse(fs.readFileSync('./todaysHighLow.json'));
             console.log('reading from file......');
@@ -81,9 +81,10 @@ function orbStrategy({ capital, tickInterval, call, put, fibonacciPartialBooking
                     capital,
                     orLow,
                     orHigh,
+                    event: "endTrade",
                 });
             }
-            dayReset();
+            emitter.emit('dayEnd');
             return;           
         }
 
@@ -99,7 +100,7 @@ function orbStrategy({ capital, tickInterval, call, put, fibonacciPartialBooking
             };
             fs.writeFileSync('./todaysHighLow.json', JSON.stringify(saveData));
 
-            console.log('fibonacciLevels', fibonacciLevels);
+           // console.log('fibonacciLevels', fibonacciLevels);
         } else {
             if (!activeTrade && !isNoNewTradeTime({hour, minute}, noNewTradeTime)) {
                 activeTrade = tradeStartCondition(candle);
@@ -164,13 +165,13 @@ function orbStrategy({ capital, tickInterval, call, put, fibonacciPartialBooking
         totalLots = 0;
         activeTrade = null;
         fibonacciCrossing = -1;
+        stopLoss = null;
     }
 
     const dayReset = () => {
         tradeReset();
         orLow = null;
         orHigh = null;
-        stopLoss = null;
     }
 
     const updateCapital = (newCapital) => {
@@ -208,6 +209,7 @@ function orbStrategy({ capital, tickInterval, call, put, fibonacciPartialBooking
         destroy,
         tradeReset,
         emitter,
+        dayReset
     };
 }
 
@@ -253,7 +255,9 @@ function getEventName(milliseconds) {
 }
 
 const getFibonacciLevels = (high, low) => {
-    const range = Math.abs(high - low);
+    // 69 k default, 88k 13
+    let range = Math.abs(high - low);
+
     const retracementLevel = [1.618, 2.618, 3.618, 4.236];
     return {
         call: retracementLevel.map(( level) => low + (range * level)),
