@@ -59,7 +59,7 @@ function orbStrategy({ capital, tickInterval, call, put, fibonacciPartialBooking
          */
         // console.log(candle);
         // console.log(hour, minute);
-        // console.log(candleCount);
+        console.log('candleCount', candleCount);
         console.log('5_min_candle', candle);
         if (candleCount === 0 && (hour > 9 || minute > 15))  {
             // readFrom files;
