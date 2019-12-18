@@ -15,7 +15,7 @@ function trader(strategy) {
         try {
             await Exchange.buy({
                 chart,
-                quantity: data.lots,
+                lots: Number(data.lots),
              });
              currentStrategyTrader.updateLots(data.lots);
              currentStrategyTrader.updateCapital(data.capital - price*data.lots*75);
@@ -31,10 +31,9 @@ function trader(strategy) {
                 subject: 'URGENT!!!!!',
                 text: `BUY FAIL!!!!!! ${chart.symbol}, lots - ${data.lots}   price - ${price} \n ${JSON.stringify(e)} \n ${JSON.stringify(data)}`
             });
+            currentStrategyTrader.tradeReset();
         }
         
-
-       
     });
 
     const closeHandler = async (data) => {
@@ -43,7 +42,7 @@ function trader(strategy) {
         try {
             await Exchange.sell({
                 chart,
-                quantity: data.lots,
+                lots: Number(data.lots),
             });
             const currentLots = currentStrategyTrader.getLots() - data.lots;
             const currentCapital = data.capital + price*data.lots*75;
