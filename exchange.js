@@ -97,7 +97,7 @@ function init() {
             }
             console.log('Candle creation starts', ticks);
         }
-        console.log(store);
+        // console.log(store);
         const nifty = _.get(grouped[`${constants.NIFTY}`], 0) || store[store.length - 1][0];
         const call = _.get(grouped[`${callChart.chartId}`], 0) || store[store.length - 1][1];
         const put = _.get(grouped[`${putChart.chartId}`], 0) || store[store.length - 1][2];
