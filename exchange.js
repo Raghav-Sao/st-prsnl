@@ -68,10 +68,12 @@ function init() {
     let tickCount = 0;
     let callChart = constants.CALL_WEEKLY;
     let putChart = constants.PUT_WEEKLY;
-
+    let lastTicksGrouped;
     function onTicks(ticks) {
         // timestamp in ticks is in second, always convert to millisecond for conversion
         // console.log(ticks);
+        const grouped = _.groupBy(ticks, 'instrument_token');
+
         const secondsTimeStamp = moment(ticks[0].timestamp).unix();
         if  (tickCount === 0) {
             console.log('ticks.length', ticks);
@@ -80,11 +82,20 @@ function init() {
             console.log(ticks[0].timestamp, secondsTimeStamp%300);
             if ( secondsTimeStamp%300 !== 0) {
                 console.log('ignoring initial ticks at - ', moment((secondsTimeStamp)*1000).utcOffset("+05:30").format());
+                if (!grouped[`${constants.NIFTY}`].length) {
+                    grouped[`${constants.NIFTY}`] = lastTicksGrouped[`${constants.NIFTY}`];
+                }  
+                if (!grouped[`${callChart.chartId}`].length) {
+                    grouped[`${callChart.chartId}`] = lastTicksGrouped[`${callChart.chartId}`];
+                } 
+                if (!grouped[`${putChart.chartId}`].length) {
+                    grouped[`${putChart.chartId}`] = lastTicksGrouped[`${putChart.chartId}`];
+                }
+                lastTicksGrouped = grouped;
                 return;
             }
             console.log('Candle creation starts', ticks);
         }
-        const grouped = _.groupBy(ticks, 'instrument_token');
         const nifty = _.get(grouped[`${constants.NIFTY}`], 0) || store[store.length - 1][0];
         const call = _.get(grouped[`${callChart.chartId}`], 0) || store[store.length - 1][1];
         const put = _.get(grouped[`${putChart.chartId}`], 0) || store[store.length - 1][2];
