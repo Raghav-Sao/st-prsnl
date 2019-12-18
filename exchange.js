@@ -73,22 +73,23 @@ function init() {
         // timestamp in ticks is in second, always convert to millisecond for conversion
         // console.log(ticks);
         const grouped = _.groupBy(ticks, 'instrument_token');
-
         const secondsTimeStamp = moment(ticks[0].timestamp).unix();
         if  (tickCount === 0) {
+            console.log('grouped', grouped);
+
             console.log('ticks.length', ticks);
             // ignore first tick when not multiple of 5minute
             // otherwise candle will shift
             console.log(ticks[0].timestamp, secondsTimeStamp%300);
             if ( secondsTimeStamp%300 !== 0) {
                 console.log('ignoring initial ticks at - ', moment((secondsTimeStamp)*1000).utcOffset("+05:30").format());
-                if (!grouped[`${constants.NIFTY}`].length) {
+                if (!grouped[`${constants.NIFTY}`]) {
                     grouped[`${constants.NIFTY}`] = lastTicksGrouped[`${constants.NIFTY}`];
                 }  
-                if (!grouped[`${callChart.chartId}`].length) {
+                if (!grouped[`${callChart.chartId}`]) {
                     grouped[`${callChart.chartId}`] = lastTicksGrouped[`${callChart.chartId}`];
                 } 
-                if (!grouped[`${putChart.chartId}`].length) {
+                if (!grouped[`${putChart.chartId}`]) {
                     grouped[`${putChart.chartId}`] = lastTicksGrouped[`${putChart.chartId}`];
                 }
                 lastTicksGrouped = grouped;
