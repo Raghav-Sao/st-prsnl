@@ -187,7 +187,7 @@ function init() {
 const buy = async ({chart, lots}) => {
     console.log('chart')
     console.log(chart, lots);
-    const trade = await kc.placeOrder('regular', {
+    return kc.placeOrder('regular', {
          exchange: 'NFO',
          tradingsymbol: chart.symbol,
          quantity: lots*75,
@@ -195,14 +195,12 @@ const buy = async ({chart, lots}) => {
          product: "MIS",
          transaction_type: "BUY",
      });
-     console.log(trade);
-     return trade;
  };
 
  const sell = async ({chart, lots}) => {
      console.log('chart')
      console.log(chart, lots);
-    const trade = await kc.placeOrder('regular', {
+     return kc.placeOrder('regular', {
         exchange: 'NFO',
         tradingsymbol: chart.symbol,
         quantity: lots*75,
@@ -210,8 +208,6 @@ const buy = async ({chart, lots}) => {
         product: "MIS",
         transaction_type: "SELL",
     });
-    console.log(trade);
-    return trade;
 };
 
 module.exports = {

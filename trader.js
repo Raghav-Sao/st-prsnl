@@ -9,41 +9,38 @@ function trader(strategy) {
         capital: 30000,
     }, Exchange.emitter);
 
-    currentStrategyTrader.emitter.on('startTrade', async (data) => {
+    currentStrategyTrader.emitter.on('startTrade', (data) => {
         const chart = getChart(data);
         const price = getPrice(data.tradeType, data.candle);
-        try {
-            await Exchange.buy({
-                chart,
-                lots: Number(data.lots),
-             });
-             currentStrategyTrader.updateLots(data.lots);
-             currentStrategyTrader.updateCapital(data.capital - price*data.lots*75);
-             console.log(`price  -  ${price}  tradeType  - ${data.tradeType} capital - ${currentStrategyTrader.getCapital()}  event - ${data.event} lot - ${data.lots}  time - ${data.candle.time}`);
-             console.log(`orlow: ${data.orLow} orHigh: ${data.orHigh}  close: ${data.candle.close}`);
-             utils.sendEmail({
-                text: `Bought ${chart.symbol}, lots - ${lots},   price - ${price}`
+        Exchange.buy({
+            chart,
+            lots: Number(data.lots),
+            }).then((trade) => {
+                currentStrategyTrader.updateLots(data.lots);
+                currentStrategyTrader.updateCapital(data.capital - price*data.lots*75);
+                console.log(`price  -  ${price}  tradeType  - ${data.tradeType} capital - ${currentStrategyTrader.getCapital()}  event - ${data.event} lot - ${data.lots}  time - ${data.candle.time}`);
+                console.log(`orlow: ${data.orLow} orHigh: ${data.orHigh}  close: ${data.candle.close}`);
+                utils.sendEmail({
+                    text: `Bought ${chart.symbol}, lots - ${data.lots},   price - ${price} trade - ${trade}`
+                });
+            }).catch((e) => {
+                console.log(`BUY FAIL ${data.tradeType}  ${data.lots} ${data.candle.time}`);
+                utils.sendEmail({
+                    subject: 'URGENT!!!!!',
+                    text: `BUY FAIL!!!!!! ${chart.symbol}, lots - ${data.lots}   price - ${price} \n ${JSON.stringify(e)} \n ${JSON.stringify(data)}`
+                });
+                currentStrategyTrader.tradeReset();
             });
-
-        } catch(e) {
-            console.log(`BUY FAIL ${data.tradeType}  ${data.lots} ${data.candle.time}`);
-            utils.sendEmail({
-                subject: 'URGENT!!!!!',
-                text: `BUY FAIL!!!!!! ${chart.symbol}, lots - ${data.lots}   price - ${price} \n ${JSON.stringify(e)} \n ${JSON.stringify(data)}`
-            });
-            currentStrategyTrader.tradeReset();
-        }
         
     });
 
-    const closeHandler = async (data) => {
+    const closeHandler = (data) => {
         const chart = getChart(data);
         const price = getPrice(data.tradeType, data.candle);
-        try {
-            await Exchange.sell({
-                chart,
-                lots: Number(data.lots),
-            });
+        Exchange.sell({
+            chart,
+            lots: Number(data.lots),
+        }).then((trade) => {
             const currentLots = currentStrategyTrader.getLots() - data.lots;
             const currentCapital = data.capital + price*data.lots*75;
             currentStrategyTrader.updateLots(currentLots);
@@ -54,16 +51,16 @@ function trader(strategy) {
                 currentStrategyTrader.tradeReset();
             }
             utils.sendEmail({
-                text: `Bought ${chart.symbol}, lots - ${data.lots},   price - ${price}`
+                text: `Bought ${chart.symbol}, lots - ${data.lots},   price - ${price} trade - ${trade}`
             });
-
-        } catch(e) {
+        }).catch((e) => {
             console.log(`SELL FAIL ${data.tradeType}  ${data.lots} ${data.candle.time}`);
             utils.sendEmail({
                 subject: 'URGENT!!!!!',
                 text: `SELL FAIL!!!!!! ${chart.symbol}, lots - ${data.lots}   price - ${price} \n ${JSON.stringify(e)}   \n ${JSON.stringify(data)}`
             });
-        }
+        });
+             
         
     };
 
