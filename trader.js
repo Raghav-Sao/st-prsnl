@@ -24,7 +24,7 @@ function trader(strategy) {
                 console.log(`price  -  ${price}  tradeType  - ${data.tradeType} capital - ${currentStrategyTrader.getCapital()}  \n event - ${data.event} \nlot - ${data.lots}  \ntime - ${data.candle.time}`);
                 console.log(`orlow: ${data.orLow} orHigh: ${data.orHigh} close: ${data.candle.close}`);
                 utils.sendEmail({
-                    text: `Bought ${chart.symbol}, lots - ${data.lots},   price - ${price} trade - ${trade}`
+                    text: `Bought ${chart.symbol}, lots - ${data.lots},   price - ${price} trade - ${JSON.stringify(trade)}`
                 });
             }).catch((e) => {
                 console.log(`BUY FAIL ${data.tradeType}  ${data.lots} ${data.candle.time}`);
@@ -53,14 +53,25 @@ function trader(strategy) {
             profit  += ((price - startPrice)*data.lots*75);
             dayProfit+=((price - startPrice)*data.lots*75);
             console.log('currentLots', currentLots);
+            
             if (currentLots === 0) {
                 console.log(`Trade Profit ---- ${profit}`);
+                utils.sendEmail({
+                    text: `Sold ${chart.symbol}, lots - ${data.lots},   price - ${price} trade - ${JSON.stringify(trade)},\n  Net Profit this trade: ${profit} `,
+                    subject: "Trade Ended",
+                });
                 profit = 0;
                 currentStrategyTrader.tradeReset();
+                if (data.isDayEnd) {
+                    onDayEnd();
+                }
+            } else {
+                utils.sendEmail({
+                    text: `Sold ${chart.symbol}, lots - ${data.lots},   price - ${price} trade - ${JSON.stringify(trade)},\n  Profit: ${profit} `,
+                    subject: "Partial Profit booking",
+                });
             }
-            utils.sendEmail({
-                text: `Sold ${chart.symbol}, lots - ${data.lots},   price - ${price} trade - ${trade},\n Net Profit this trade: ${profit} `
-            });
+            
         }).catch((e) => {
             console.log(`SELL FAIL ${data.tradeType}  ${data.lots} ${data.candle.time}`);
             utils.sendEmail({
@@ -72,10 +83,7 @@ function trader(strategy) {
     };
 
 
-
-    currentStrategyTrader.emitter.on('partialClose', closeHandler);
-    currentStrategyTrader.emitter.on('endTrade', closeHandler);
-    currentStrategyTrader.emitter.on('dayEnd', () => {
+    function onDayEnd() {
         currentStrategyTrader.dayReset();
         console.log(`......Day End Profit...... ${dayProfit}`)
         utils.sendEmail({
@@ -83,7 +91,11 @@ function trader(strategy) {
             text: `Todays profit - ${dayProfit}`
         });
         dayProfit= 0;
-    });
+    }
+
+    currentStrategyTrader.emitter.on('partialClose', closeHandler);
+    currentStrategyTrader.emitter.on('endTrade', closeHandler);
+    currentStrategyTrader.emitter.on('dayEnd', onDayEnd);
 
     currentStrategyTrader.emitter.on('shutDown', (data) => {
         currentStrategyTrader.destroy();

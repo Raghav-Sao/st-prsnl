@@ -2,6 +2,7 @@ const moment = require('moment');
 const EventEmitter = require('events');
 const fs = require('fs');
 const emitter = new EventEmitter();
+const utils = require('../utils');
 
 const MAX_NUMBER = 200000;
 const defaultNoNewTradeTime = {minute: 45, hour: 14};
@@ -82,9 +83,12 @@ function orbStrategy({ capital, tickInterval, call, put, fibonacciPartialBooking
                     orLow,
                     orHigh,
                     event: "endTrade",
+                    isDayEnd: true,
                 });
+            }  else {
+                emitter.emit('dayEnd');
             }
-            emitter.emit('dayEnd');
+
             return;           
         }
 
@@ -98,6 +102,10 @@ function orbStrategy({ capital, tickInterval, call, put, fibonacciPartialBooking
                 fibonacciLevels,
                 time: candle.time,
             };
+            utils.sendEmail({
+                text: `${JSON.stringify(saveData)} `,
+                subject: "Todays High Low",
+            });
             fs.writeFileSync('./todaysHighLow.json', JSON.stringify(saveData));
 
            // console.log('fibonacciLevels', fibonacciLevels);
