@@ -27,14 +27,15 @@ function orbStrategy({ capital, tickInterval, call, put, fibonacciPartialBooking
     let totalLots;
     let fibonacciCrossing = -1;
     let candleCount = 0;
-
+    let callAllowed = false;
 
 
     const tradeStartCondition = (candle) => {
         if (candle.close < orLow && candle.previousClose >= orLow ) {
+            callAllowed = true;
             return 'put';
         } else if(candle.close > orHigh && candle.previousClose <= orHigh) {
-            return false && 'call';
+            return callAllowed && 'call';
         }
     };
 
