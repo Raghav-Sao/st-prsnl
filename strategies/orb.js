@@ -34,7 +34,7 @@ function orbStrategy({ capital, tickInterval, call, put, fibonacciPartialBooking
         if (candle.close < orLow && candle.previousClose >= orLow ) {
             return 'put';
         } else if(candle.close > orHigh && candle.previousClose <= orHigh) {
-            return 'call';
+            return false && 'call';
         }
     };
 
