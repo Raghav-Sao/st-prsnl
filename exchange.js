@@ -93,8 +93,8 @@ function init() {
             console.log('ticks.length', ticks);
             // ignore first tick when not multiple of 5minute
             // otherwise candle will shift
-            console.log(ticks[0].timestamp, secondsTimeStamp%300);
-            if ( secondsTimeStamp%300 !== 0) {
+            console.log(ticks[0].timestamp, secondsTimeStamp%900);
+            if ( secondsTimeStamp%900 !== 0) {
                 console.log('ignoring initial ticks at - ', moment((secondsTimeStamp)*1000).utcOffset("+05:30").format());
                 return;
             }
@@ -134,7 +134,7 @@ function init() {
             const diff = transformed[0].timestamp - firstTimeStamp;
 
             // after 5 minutes create and emit candle
-            if (diff >= 300) {
+            if (diff >= 900) {
                 createAndEmitCandle(store);
                 store = [];
             }

@@ -5,7 +5,7 @@ const utils = require('./utils');
 
 function trader(strategy) {
     const currentStrategyTrader =  strategy({
-        capital: 50000,
+        capital: 45000,
     }, Exchange.emitter);
 
     let startPrice = 0;
