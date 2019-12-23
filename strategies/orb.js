@@ -264,14 +264,14 @@ function getEventName(milliseconds) {
 const getFibonacciLevels = (high, low) => {
     // 69 k default, 88k 13
     let range = Math.abs(high - low);
-    if (range > 20) {
-        range = 14;
+    if (range > 30) {
+        range = 30;
     }
 
     const retracementLevel = [1.618, 2.618, 3.618, 4.236];
     return {
-        call: retracementLevel.map(( level) => low + (range * level)),
-        put: retracementLevel.map(( level) => high - (range * level)),
+        call: retracementLevel.map(( level) => high - range + (range * level)),
+        put: retracementLevel.map(( level) => low + range - (range * level)),
     };
 }
 
