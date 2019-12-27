@@ -13,63 +13,55 @@ module.exports = {
     NIFTY: charts.NIFTY,
     chartByStrike: {
         call: {
+            12000: {
+                chartId: 11809282,
+                symbol: 'NIFTY2010212000CE',
+            },
+            12050: {
+                chartId: 11810050,
+                symbol: 'NIFTY2010212050CE',
+            },
             12100: {
-                chartId: 9505794,
-                symbol: 'NIFTY19DEC12100CE',
+                chartId: 11811074,
+                symbol: 'NIFTY2010212100CE',
             },
             12150: {
-                chartId: 13257986,
-                symbol: 'NIFTY19DEC12150CE',
+                chartId: 11811586,
+                symbol: 'NIFTY2010212150CE',
             },
             12200: {
-                chartId: 10481922,
-                symbol: 'NIFTY19DEC12200CE'
+                chartId: 11812098,
+                symbol: 'NIFTY2010212200CE'
             },
             12250: {
-                chartId: 13275138,
-                symbol: 'NIFTY19DEC12250CE'
-            },
-            12300: {
-                chartId: 11129858,
-                symbol: 'NIFTY19DEC12300CE'
-            },
-            12350: {
-                chartId: 13276418,
-                symbol: 'NIFTY19DEC12350CE'
-            },
-            12400: {
-                chartId: 10292994,
-                symbol: 'NIFTY19DEC12400CE'
+                chartId: 11812866,
+                symbol: 'NIFTY2010212250CE'
             },
         },
         put: {
+            12000: {
+                chartId: 11809538,
+                symbol: 'NIFTY2010212000PE',
+            },
+            12050: {
+                chartId: 11810818,
+                symbol: 'NIFTY2010212050PE',
+            },
             12100: {
-                chartId: 9506562,
-                symbol: 'NIFTY19DEC12100PE',
+                chartId: 11811330,
+                symbol: 'NIFTY2010212100PE',
             },
             12150: {
-                chartId: 13273858,
-                symbol: 'NIFTY19DEC12150PE',
+                chartId: 11811842,
+                symbol: 'NIFTY2010212150PE',
             },
             12200: {
-                chartId: 10483458,
-                symbol: 'NIFTY19DEC12200PE'
+                chartId: 11812354,
+                symbol: 'NIFTY2010212200PE'
             },
             12250: {
-                chartId: 13275394,
-                symbol: 'NIFTY19DEC12250PE'
-            },
-            12300: {
-                chartId: 11130114,
-                symbol: 'NIFTY19DEC12300PE'
-            },
-            12350: {
-                chartId: 13277442,
-                symbol: 'NIFTY19DEC12350PE'
-            },
-            12400: {
-                chartId: 10294018,
-                symbol: 'NIFTY19DEC12400PE'
+                chartId: 11813378,
+                symbol: 'NIFTY2010212250PE'
             },
         }
     }
