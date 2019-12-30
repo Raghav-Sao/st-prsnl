@@ -36,7 +36,11 @@ module.exports = {
             12250: {
                 chartId: 11812866,
                 symbol: 'NIFTY2010212250CE'
-            },
+            }, 
+            12300: {
+                chartId: 11813634,
+                symbol: 'NIFTY2010212300CE'
+            }
         },
         put: {
             12000: {
@@ -63,6 +67,14 @@ module.exports = {
                 chartId: 11813378,
                 symbol: 'NIFTY2010212250PE'
             },
+            12300: {
+                chartId: 11814914,
+                symbol: 'NIFTY2010212300PE'
+            }, 
+            12350: {
+                chartId: 11815426,
+                symbol: 'NIFTY2010212350PE'
+            }
         }
     }
 
