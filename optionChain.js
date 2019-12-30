@@ -4,12 +4,16 @@ const tr = require('tor-request');
 const _ = require('lodash');
 const moment = require('moment');
 const MongoClient = require('mongodb').MongoClient;
+const shttp = require('socks5-http-client');
+
 const mongoUrl = 'mongodb://admin:optionchain@13.235.179.100:27017';
 let DB;
 
 function fetchViaTor(url) {
     const promise = new Promise((resolve, reject) => {
+        console.log("sending");
         tr.request(url, function (err, res, body) {
+            console.log(err, res);
             if (!err && res.statusCode == 200) {
               resolve({
                   res,
@@ -46,7 +50,7 @@ const getOptionData = async (url) => {
         const minutes = momentTime.minutes();
         if (true || ((hours > 9) && (hours < 15)) || (hours === 9 && minutes >=15) || (hours === 15 && minutes <= 30)) {
             const minuteTimeStamp = Math.floor(moment().unix()/60);
-            const rawData = await fetchViaTor(url);
+            const rawData = await axios.get(url);
             console.log(rawData, rawData);
             const readableTime = momentTime.format("DD-MMM-YYYY::HH:mm");
             const optData = rawData.data;
@@ -110,8 +114,23 @@ function createOptionRecord(strikePrices, groupedData, expiry) {
     return result;
 }
 
-setInterval(() => {
-    getOptionData('https://beta.nseindia.com/api/option-chain-indices?symbol=NIFTY');
-}, 1000*5)
+// setInterval(() => {
+//     getOptionData('https://beta.nseindia.com/api/option-chain-indices?symbol=NIFTY');
+// }, 1000*5)
 
 //https://beta.nseindia.com/api/option-chain-indices?symbol=NIFTY
+
+var Agent = require('socks5-http-client/lib/Agent');
+
+axios({
+	url: 'https://beta.nseindia.com/api/option-chain-indices?symbol=NIFTY',
+	agentClass: Agent,
+	agentOptions: {
+		socksHost: 'my-tor-proxy-host', // Defaults to 'localhost'.
+		socksPort: 9050 // Defaults to 1080.
+	}
+}, function(err, res) {
+	console.log(err || res.body);
+}).then((res)=>{
+    console.log(res);
+});
