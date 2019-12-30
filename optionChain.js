@@ -1,10 +1,30 @@
 const axios = require('axios');
 const yargs = require('yargs');
+const tr = require('tor-request');
 const _ = require('lodash');
 const moment = require('moment');
 const MongoClient = require('mongodb').MongoClient;
-const mongoUrl = 'mongodb://admin:optionchain@127.0.0.1:27017';
+const mongoUrl = 'mongodb://admin:optionchain@13.235.179.100:27017';
 let DB;
+
+function fetchViaTor(url) {
+    const promise = new Promise((resolve, reject) => {
+        tr.request(url, function (err, res, body) {
+            if (!err && res.statusCode == 200) {
+              resolve({
+                  res,
+                  body,
+              });
+            } else {
+                reject(err);
+            }
+          });
+    });
+    return promise;  
+}
+
+
+
 MongoClient.connect(mongoUrl, function(err, client) {
     if (err) {
         console.log('ERROR CONNECTING DB', err);
@@ -24,9 +44,10 @@ const getOptionData = async (url) => {
         const momentTime =  moment().utcOffset("+05:30");
         const hours = momentTime.hours();
         const minutes = momentTime.minutes();
-        if (((hours > 9) && (hours < 15)) || (hours === 9 && minutes >=15) || (hours === 15 && minutes <= 30)) {
+        if (true || ((hours > 9) && (hours < 15)) || (hours === 9 && minutes >=15) || (hours === 15 && minutes <= 30)) {
             const minuteTimeStamp = Math.floor(moment().unix()/60);
-            const rawData = await axios.get(url);
+            const rawData = await fetchViaTor(url);
+            console.log(rawData, rawData);
             const readableTime = momentTime.format("DD-MMM-YYYY::HH:mm");
             const optData = rawData.data;
             console.log(monthExpiry, weekExpiry);
@@ -91,6 +112,6 @@ function createOptionRecord(strikePrices, groupedData, expiry) {
 
 setInterval(() => {
     getOptionData('https://beta.nseindia.com/api/option-chain-indices?symbol=NIFTY');
-}, 1000*60)
+}, 1000*5)
 
 //https://beta.nseindia.com/api/option-chain-indices?symbol=NIFTY
