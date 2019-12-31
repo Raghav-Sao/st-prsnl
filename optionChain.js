@@ -27,7 +27,7 @@ const getOptionData = async (url) => {
         const momentTime =  moment().utcOffset("+05:30");
         const hours = momentTime.hours();
         const minutes = momentTime.minutes();
-        if (true || ((hours > 9) && (hours < 15)) || (hours === 9 && minutes >=15) || (hours === 15 && minutes <= 30)) {
+        if (((hours > 9) && (hours < 15)) || (hours === 9 && minutes >=15) || (hours === 15 && minutes <= 30)) {
             const minuteTimeStamp = Math.floor(moment().unix()/60);
             const config = {
                 url,
@@ -97,7 +97,7 @@ function createOptionRecord(strikePrices, groupedData, expiry) {
 
 setInterval(() => {
     getOptionData('https://beta.nseindia.com/api/option-chain-indices?symbol=NIFTY');
-}, 1000)
+}, 1000*120)
 
 //https://beta.nseindia.com/api/option-chain-indices?symbol=NIFTY
-
+//node optionChain --weekExpiry 02-Jan-2020 --monthExpiry 30-Jan-2020
