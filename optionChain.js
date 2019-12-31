@@ -114,23 +114,23 @@ function createOptionRecord(strikePrices, groupedData, expiry) {
     return result;
 }
 
-// setInterval(() => {
-//     getOptionData('https://beta.nseindia.com/api/option-chain-indices?symbol=NIFTY');
-// }, 1000*5)
+setInterval(() => {
+    getOptionData('https://beta.nseindia.com/api/option-chain-indices?symbol=NIFTY');
+}, 1000*60)
 
 //https://beta.nseindia.com/api/option-chain-indices?symbol=NIFTY
 
-var Agent = require('socks5-http-client/lib/Agent');
+// var Agent = require('socks5-http-client/lib/Agent');
 
-axios({
-	url: 'https://beta.nseindia.com/api/option-chain-indices?symbol=NIFTY',
-	agentClass: Agent,
-	agentOptions: {
-		socksHost: 'my-tor-proxy-host', // Defaults to 'localhost'.
-		socksPort: 9050 // Defaults to 1080.
-	}
-}, function(err, res) {
-	console.log(err || res.body);
-}).then((res)=>{
-    console.log(res);
-});
+// axios({
+// 	url: 'https://beta.nseindia.com/api/option-chain-indices?symbol=NIFTY',
+// 	agentClass: Agent,
+// 	agentOptions: {
+// 		socksHost: 'my-tor-proxy-host', // Defaults to 'localhost'.
+// 		socksPort: 9050 // Defaults to 1080.
+// 	}
+// }, function(err, res) {
+// 	console.log(err || res.body);
+// }).then((res)=>{
+//     console.log(res);
+// });

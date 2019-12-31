@@ -2,12 +2,11 @@ const orbStrategy = require('./strategies/orb');
 const Exchange = require('./exchange');
 const utils = require('./utils');
 
-
+const todaysCapital = 40000;
 function trader(strategy) {
     const currentStrategyTrader =  strategy({
-        capital: 40000,
+        capital: todaysCapital,
     }, Exchange.emitter);
-
     let startPrice = 0;
     let profit = 0;
     let dayProfit = 0;
@@ -40,24 +39,33 @@ function trader(strategy) {
     const closeHandler = (data) => {
         const chart = getChart(data);
         const price = getPrice(data.tradeType, data.candle);
+        const prospectProfit = dayProfit+ ((price  - startPrice)*currentStrategyTrader.getLots());
+        let bookLots = data.lots;
+        if (prospectProfit >= 0.75*todaysCapital)  {
+            bookLots = currentStrategyTrader.getLots();
+        } else if (prospectProfit >= 0.5*todaysCapital) {
+            bookLots = Math.floor(currentStrategyTrader.getLots()*0.75); 
+        } 
+
         Exchange.sell({
             chart,
-            lots: Number(data.lots),
+            lots: Number(bookLots),
         }).then((trade) => {
-            const currentLots = currentStrategyTrader.getLots() - data.lots;
-            const currentCapital = data.capital + price*data.lots*75;
+            const currentLots = currentStrategyTrader.getLots() - bookLots;
+            const currentCapital = data.capital + price*bookLots*75;
+            profit  += ((price - startPrice)*bookLots*75);
+            dayProfit +=((price - startPrice)*bookLots*75);
             currentStrategyTrader.updateLots(currentLots);
             currentStrategyTrader.updateCapital(currentCapital);
             console.log(`price  -  ${price}  tradeType  - ${data.tradeType}  capital - ${currentStrategyTrader.getCapital()}  event - ${data.event} lot - ${data.lots} time - ${data.candle.time}`);
             console.log(`orlow: ${data.orLow} orHigh: ${data.orHigh}  close: ${data.candle.close}`);
-            profit  += ((price - startPrice)*data.lots*75);
-            dayProfit+=((price - startPrice)*data.lots*75);
+           
             console.log('currentLots', currentLots);
             
-            if (currentLots === 0) {
+            if (currentLots <= 0) {
                 console.log(`Trade Profit ---- ${profit}`);
                 utils.sendEmail({
-                    text: `Sold ${chart.symbol}, lots - ${data.lots},   price - ${price} trade - ${JSON.stringify(trade)},\n  Net Profit this trade: ${profit} `,
+                    text: `Sold ${chart.symbol}, lots - ${bookLots},   price - ${price} trade - ${JSON.stringify(trade)},\n  Net Profit this trade: ${profit} `,
                     subject: "Trade Ended",
                 });
                 profit = 0;
@@ -67,16 +75,16 @@ function trader(strategy) {
                 }
             } else {
                 utils.sendEmail({
-                    text: `Sold ${chart.symbol}, lots - ${data.lots},   price - ${price} trade - ${JSON.stringify(trade)},\n  Profit: ${profit} `,
+                    text: `Sold ${chart.symbol}, lots - ${bookLots},   price - ${price} trade - ${JSON.stringify(trade)},\n  Profit: ${profit} `,
                     subject: "Partial Profit booking",
                 });
             }
             
         }).catch((e) => {
-            console.log(`SELL FAIL ${data.tradeType}  ${data.lots} ${data.candle.time}`);
+            console.log(`SELL FAIL ${data.tradeType}  ${bookLots} ${data.candle.time}`);
             utils.sendEmail({
                 subject: 'URGENT!!!!!',
-                text: `SELL FAIL!!!!!! ${chart.symbol}, lots - ${data.lots}   price - ${price} \n ${JSON.stringify(e)}   \n ${JSON.stringify(data)}`
+                text: `SELL FAIL!!!!!! ${chart.symbol}, lots - ${bookLots}   price - ${price} \n ${JSON.stringify(e)}   \n ${JSON.stringify(data)}`
             });
         });
              

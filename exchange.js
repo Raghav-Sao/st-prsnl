@@ -34,6 +34,8 @@ kc.generateSession(REQUEST_TOKEN, constants.API_SECRET)
 
 function init() {   
     setInterval(async () => {
+        const postions = await kc.getPositions();
+        console.log('positions', postions);
         const orders = kc.getOrders().then((data) => {
             //console.log(moment().format(), orders )
         }).catch((e) => {
@@ -45,7 +47,7 @@ function init() {
             });
         });         
         
-    }, 10*1000);
+    }, 60*1000);
 
     const ticker = new KiteTicker({
         api_key: constants.API_KEY,
