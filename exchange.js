@@ -203,6 +203,10 @@ const buy = async ({chart, lots}) => {
  const sell = async ({chart, lots}) => {
      console.log('chart')
      console.log(chart, lots);
+     const positions = await kc.getPositions();
+     const targetPosition = _.filter(positions, (pos) => pos.tradingsymbol === chart.symbol);
+     const quantity = _.sum(_.map(targetPosition, 'day_buy_quantity'));
+     console.log('Total lots  available', quantity);
      return kc.placeOrder('regular', {
         exchange: 'NFO',
         tradingsymbol: chart.symbol,
