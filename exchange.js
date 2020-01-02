@@ -118,8 +118,10 @@ function init() {
 
         if (tickCount === 0) {
             tickCount++;
-            const callStrike = utils.getStrikeForOption({currentPrice: transformed[0].last_price, optionType: 'CE'});
-            const putStrike = utils.getStrikeForOption({currentPrice: transformed[0].last_price, optionType: 'PE'});
+            const callStrike = 12200;
+            //utils.getStrikeForOption({currentPrice: transformed[0].last_price, optionType: 'CE'});
+            const putStrike = 12200;
+            //utils.getStrikeForOption({currentPrice: transformed[0].last_price, optionType: 'PE'});
             console.log('transformed[0].last_price', transformed[0].last_price);
             console.log('STRIKES')
             console.log(callStrike, putStrike);
