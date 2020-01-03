@@ -33,7 +33,7 @@ const getOptionData = async (url) => {
             const config = {
                 url,
                 //: 'https://support.zerodha.com/category/trading-and-markets/kite-web-and-mobile/articles/kite-option-chain',
-                // headers: {
+                 headers: {
                 //     // 'authority': 'beta.nseindia.com',
                 //     // ':path' : '/api/option-chain-indices?symbol=NIFTY',
                 //     'scheme': 'https',
@@ -52,7 +52,7 @@ const getOptionData = async (url) => {
                 //     // cookie: '_ga=GA1.2.1131240121.1572192743; _ga=GA1.3.1131240121.1572192743; _gid=GA1.2.555304031.1577768936; bm_mi=1BB648767874929964069188BB5994F4~l925gU0GDnC000kA3oEisrzSKDtHQQiMvUOldLuz215Ut2gspip0eJ0fj2sMLf+jdTBoMKZC553vGi+bp9DykNxYeZoI82RYOOqEo8rwiS8lbZ/V7+vfpF8lJ+yrsRc0U9L2ynJpD6iw2WCcrgGbPb9cwVlYgCKkM+N69hcPTj0oQYiPqplkNm91pVf7Z6t3moKHCW3Xud9r8aV6TI+N/DJNTQqYx6zclPXLc41CmdQxt0ncRU5fXt7qunHrbYt3wToScpYCYpy7iaDz3nX+3Q==; ak_bmsc=0AAADE5E0D45EFDB4A8B5D8CD1B146D5B81AA29AA57D000072180C5E0776F944~plYiU5FShLZVLWhIaCcDe9N0Gk7lvcigUjbuTmWiDuBr8J4bkH7jeKdyDY212R8ilo0HNFSR9W/BMgpfPAILLPxlZOzGbAtjyRAaaoL+Gq9vU+MbVQ/PVZOQ+S0UHvuAqai7q5dIhJl19bDnfUEUT1IsKknBapJ1HeZV7pSjJpE4DWtOLjHlK/qTqg6aJAlJCCGijEx+/O4m4GbFvWj55m0jaJWVmP9jRzBkvkPAfEoZA4R7G7oPWBzWwXfJNMGcao; _gid=GA1.3.555304031.1577768936; _gat_UA-143761337-1=1; nseQuoteSymbols=[{"symbol":"NIFTY","identifier":"OPTIDXNIFTY02-01-2020PE12150.00","type":"equity"}]; RT="z=1&dm=nseindia.com&si=1de2cb57-2cad-456d-ae3f-656a5883287e&ss=k4us5zg1&sl=4&tt=5rj&bcn=%2F%2F684d0d3d.akstat.io%2F&ld=28y9&nu=6b96127c5a8e328d0702b520ede803c3&cl=2m71"; bm_sv=F1346FA46DE34D3F8CCBB2C502B4DB79~wsAxSPr0WOUkJbZBOZHNCUiDEnt2sCJMoQcScd9YiS59LrBajjoLPDLqRovV0vZ0pfJcq24mdGFbPGtNXvIIk25VM/OmJV7TGBwWxO6QMzqMAgoL4ARu5ODDLYMH5+BU0QHLIoJk6zz99IqzZaXcGtyvpPN6muBxTXxGXKXPg8I=',
                 //     // referer: 'https://beta.nseindia.com/get-quotes/derivatives?symbol=NIFTY&identifier=OPTIDXNIFTY02-01-2020PE12150.00'
 
-                // },
+                 },
                 // proxy: 'http://lum-customer-hl_12ca094e-zone-opt_chain:q6ktwr249hph@zproxy.lum-superproxy.io:22225',
             }
             const rawData = await proxyRequest(config);
