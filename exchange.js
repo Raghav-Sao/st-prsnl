@@ -6,6 +6,7 @@ var KiteTicker = require("kiteconnect").KiteTicker;
 const KiteConnect = require("kiteconnect").KiteConnect;
 const constants = require('./constants');
 const utils = require('./utils');
+const fs = require('fs');
 
 let ACCESS_TOKEN;
 let PUBLIC_TOKEN;
@@ -134,7 +135,9 @@ function init() {
         if (store.length) {
             const firstTimeStamp = store[0][0].timestamp;
             const diff = transformed[0].timestamp - firstTimeStamp;
-
+            if(diff%10 === 0) {
+                fs.appendFileSync('./tickData.json', JSON.stringify(ticks));
+            }
             // after 5 minutes create and emit candle
             if (diff >= 900) {
                 createAndEmitCandle(store);
@@ -204,7 +207,9 @@ const buy = async ({chart, lots}) => {
      console.log('chart')
      console.log(chart, lots);
      const positions = await kc.getPositions();
+     console.log('positions', positions);
      const targetPosition = _.filter(_.get(positions, 'net'), (pos) => pos.tradingsymbol === chart.symbol);
+     console.log('targetPosition', targetPosition);
      const quantity = _.sum(_.map(targetPosition, 'quantity')) || 999999;
      console.log('Total quantity  available', quantity);
      return kc.placeOrder('regular', {
