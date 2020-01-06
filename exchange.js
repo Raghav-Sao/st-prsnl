@@ -118,10 +118,8 @@ function init() {
 
         if (tickCount === 0) {
             tickCount++;
-            const callStrike = 12200;
-            //utils.getStrikeForOption({currentPrice: transformed[0].last_price, optionType: 'CE'});
-            const putStrike = 12200;
-            //utils.getStrikeForOption({currentPrice: transformed[0].last_price, optionType: 'PE'});
+            const callStrike = utils.getStrikeForOption({currentPrice: transformed[0].last_price, optionType: 'CE'});
+            const putStrike = utils.getStrikeForOption({currentPrice: transformed[0].last_price, optionType: 'PE'});
             console.log('transformed[0].last_price', transformed[0].last_price);
             console.log('STRIKES')
             console.log(callStrike, putStrike);
@@ -206,13 +204,13 @@ const buy = async ({chart, lots}) => {
      console.log('chart')
      console.log(chart, lots);
      const positions = await kc.getPositions();
-     const targetPosition = _.filter(positions, (pos) => pos.tradingsymbol === chart.symbol);
-     const quantity = _.sum(_.map(targetPosition, 'day_buy_quantity'));
-     console.log('Total lots  available', quantity);
+     const targetPosition = _.filter(_.get(positions, 'net'), (pos) => pos.tradingsymbol === chart.symbol);
+     const quantity = _.sum(_.map(targetPosition, 'quantity')) || 999999;
+     console.log('Total quantity  available', quantity);
      return kc.placeOrder('regular', {
         exchange: 'NFO',
         tradingsymbol: chart.symbol,
-        quantity: lots*75,
+        quantity: Math.min(lots*75, quantity),
         order_type: "MARKET",
         product: "MIS",
         transaction_type: "SELL",

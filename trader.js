@@ -2,7 +2,7 @@ const orbStrategy = require('./strategies/orb');
 const Exchange = require('./exchange');
 const utils = require('./utils');
 
-const todaysCapital = 50000;
+const todaysCapital = 45000;
 function trader(strategy) {
     const currentStrategyTrader =  strategy({
         capital: todaysCapital,

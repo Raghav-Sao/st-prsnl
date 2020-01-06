@@ -21,6 +21,10 @@ const PARSED_ARGS = yargs.parse(process.argv);
 const weekExpiry = PARSED_ARGS.weekExpiry;
 const monthExpiry = PARSED_ARGS.monthExpiry;
 
+const analyse = () => {
+    const records = DB.find({});
+
+};
 const getOptionData = async (url) => {
 
     try {
@@ -119,7 +123,7 @@ function createOptionRecord(strikePrices, groupedData, expiry) {
 }
 
 setTimeout(() => {
-    getOptionData('https://beta.nseindia.com/api/option-chain-indices?symbol=NIFTY');
+   // getOptionData('https://beta.nseindia.com/api/option-chain-indices?symbol=NIFTY');
 }, 1000)
 
 //https://beta.nseindia.com/api/option-chain-indices?symbol=NIFTY
