@@ -13,6 +13,22 @@ module.exports = {
     NIFTY: charts.NIFTY,
     chartByStrike: {
         call: {
+            11800: {
+                chartId: 9882626,
+                symbol: 'NIFTY2010911800CE',
+            },
+            11850: {
+                chartId: 9883138,
+                symbol: 'NIFTY2010911850CE',
+            },
+            11900: {
+                chartId: 9883650,
+                symbol: 'NIFTY2010911900CE',
+            },
+            11950: {
+                chartId: 9885698,
+                symbol: 'NIFTY2010911950CE',
+            },
             12000: {
                 chartId: 9888770,
                 symbol: 'NIFTY2010912000CE',
@@ -36,13 +52,29 @@ module.exports = {
             12250: {
                 chartId: 9899522,
                 symbol: 'NIFTY2010912250CE'
-            }, 
+            },
             12300: {
                 chartId: 9907714,
                 symbol: 'NIFTY2010912300CE'
             }
         },
         put: {
+            11800: {
+                chartId: 9882882,
+                symbol: 'NIFTY2010911800PE',
+            },
+            11850: {
+                chartId: 9883394,
+                symbol: 'NIFTY2010911850PE',
+            },
+            11900: {
+                chartId: 9883906,
+                symbol: 'NIFTY2010911900PE',
+            },
+            11950: {
+                chartId: 9885954,
+                symbol: 'NIFTY2010911950PE',
+            },
             12000: {
                 chartId: 9889026,
                 symbol: 'NIFTY2010912000PE',
