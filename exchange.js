@@ -136,7 +136,7 @@ function init() {
             const firstTimeStamp = store[0][0].timestamp;
             const diff = transformed[0].timestamp - firstTimeStamp;
             if(diff%10 === 0) {
-                fs.appendFileSync('./tickData.json', JSON.stringify(ticks));
+                fs.appendFileSync('./tickData.json', JSON.stringify(grouped));
             }
             // after 5 minutes create and emit candle
             if (diff >= 900) {
