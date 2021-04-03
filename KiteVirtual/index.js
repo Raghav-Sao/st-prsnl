@@ -90,7 +90,7 @@ function KiteConnect() {
 
 function KiteTicker() {
     this.subscribedToken = [];
-    this.tickerCount = 500;
+    this.tickerCount = 648;
     this.autoReconnect = () => {
 
     }
@@ -122,7 +122,7 @@ function KiteTicker() {
         
         this.interval = setInterval(() => {
             console.log(this.tickerCount)
-            if(this.tickerCount >=505) {
+            if(this.tickerCount >=655) {
                 clearInterval(this.interval);
                 return
             }

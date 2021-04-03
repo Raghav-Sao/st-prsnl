@@ -81,7 +81,7 @@ async function getHistoricalData({ instrumentTokens, interval, fromDate, toDate}
             try {
             const res = await kc.getHistoricalData(token, interval, fromDate, toDate);
             // const candle = res.data.candels;
-            console.log(JSON.stringify(res));
+            // console.log(JSON.stringify(res));
         } catch(error) {
             console.log(error);
         }
@@ -145,7 +145,7 @@ async function init() {
     let lastTicksGrouped;
     async function onTicks(ticks) {
         // timestamp in ticks is in second, always convert to millisecond for conversion
-        console.log(ticks,"---------->");
+        console.log("ticks","---------->");
         const grouped = _.groupBy(ticks, 'instrument_token');
         // console.log(grouped,subscribedToken )
         // return
@@ -158,9 +158,6 @@ async function init() {
 
         const secondsTimeStamp = moment(ticks[0].timestamp).unix();
         if  (tickCount === 0) {
-            console.log("yes----------------")
-            // console.log('grouped', "grouped");
-            // console.log('ticks.length', "ticks");
             // ignore first tick when not multiple of 15minute
             // otherwise candle will shift
             // console.log(ticks,secondsTimeStamp, secondsTimeStamp%INTERVAL);
@@ -173,18 +170,15 @@ async function init() {
             } else {
                 
                 let toDate = new Date(ticks[0].timestamp);
-                console.log(moment(toDate).format() );
 
                 toDate.setMinutes(toDate.getMinutes()-1);
                 toDate = new Date(toDate);
                 let fromDate = new Date(ticks[0].timestamp);
-                console.log(moment(toDate).format() );
                 fromDate = new Date(fromDate.setDate(fromDate.getDate()-30));
                 console.log(moment(toDate).utcOffset("+05:30").format(), "todate");
                 console.log(moment(fromDate).utcOffset("+05:30").format(), "fromDate");
                 // const data = await getHistoricalData2({instrumentTokens: subscribedToken, interval: '15minute', toDate, fromDate}) ??
                 getHistoricalData2({instrumentTokens: subscribedToken, interval: '15minute', toDate, fromDate}).then(data => {
-                    console.log(data && data.length, "data");
                     let lastCandle;
                     data.forEach( candle => {
                         lastCandle = includeRSI(candle, lastCandle);
@@ -201,7 +195,6 @@ async function init() {
             // const lastHistoricalCandle = await getHistoricalData(subscribedToken);
             // console.log('Candle creation starts', ticks);
         }
-        console.log("ticks2","---------->");
         // console.log(store);
         const raw = subscribedToken.map( token  => {
             // console.log(grouped, token);
@@ -232,19 +225,14 @@ async function init() {
             //     console.log({newSubscribeToken})
             // }
         }
-        console.log("ticks23","---------->");
         if (store.length) {
-            console.log("ticks24","---------->");
             const firstTimeStamp = store[0][0].timestamp;
             const diff = transformed[0].timestamp - firstTimeStamp;
             if(diff%10 === 0) {
                 fs.appendFileSync('./tickData.json', JSON.stringify(grouped));
             }
             // after 15 minutes create and emit candle
-            console.log("ticks23","---------->");
-            console.log(diff, INTERVAL, firstTimeStamp);
             if (diff >= INTERVAL) {
-                console.log("creating candle")
                 createAndEmitCandle(store);
                 store = [];
             }
@@ -257,13 +245,11 @@ async function init() {
     let lastCandle;
     function createAndEmitCandle(data) {
         if(!lastCandle && lastHistoricalCandle) {
-            console.log("right place----------------->");
             lastCandle = lastHistoricalCandle;
         }
         const nifty = _.map(data, (item)  => item[0]);
         // const call = _.map(data, (item)  => item[1]);
         // const put = _.map(data, (item)  => item[2]);
-        // console.log(nifty, call, put, "===data====>");
         const candleData = {
             ...getCandle(nifty),
             // callCandle: getCandle(call),
@@ -274,13 +260,13 @@ async function init() {
         
         const candle = utils.includeRSI(candleData, lastCandle);
 
-        // if(lastCandle) {
-        //     candle.previousClose =  lastCandle.close;
-        //     candle.previousRSI = lastCandle.rsi;
-        // }   
+        if(lastCandle) {
+            candle.previousClose =  lastCandle.close;
+            candle.previousRSI = lastCandle.rsi;
+        }   
         // console.log(candle);
-        // emitter.emit('5-minute-candle', candle);
-        console.log("----1 min candle--->", candle)
+        console.log("emitting----15 min candle--->")
+        emitter.emit('15-minute-candle', candle);
         lastCandle = candle;
 
     }
@@ -313,7 +299,8 @@ async function init() {
 
 
 const buy = async ({chart, lots}) => {
-    console.log('chart')
+    console.log('buy')
+    return
     console.log(chart, lots);
     return kc.placeOrder('regular', {
          exchange: 'NFO',
@@ -326,7 +313,8 @@ const buy = async ({chart, lots}) => {
  };
 
  const sell = async ({chart, lots}) => {
-     console.log('chart')
+     console.log('sell')
+     return
      console.log(chart, lots);
      const positions = await kc.getPositions();
      console.log('positions', positions);
