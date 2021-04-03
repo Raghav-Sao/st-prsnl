@@ -11,7 +11,7 @@ const fs = require('fs');
 let ACCESS_TOKEN;
 let PUBLIC_TOKEN;
 let REQUEST_TOKEN = process.argv[2];
-console.log('REQUEST_TOKEN', REQUEST_TOKEN);
+console.log('REQUEST_TOKEN', constants.REQUEST_TOKEN);
 
 const kc = new KiteConnect({
 	api_key: constants.API_KEY
@@ -36,7 +36,7 @@ kc.generateSession(REQUEST_TOKEN, constants.API_SECRET)
 function init() {   
     setInterval(async () => {
         const postions = await kc.getPositions();
-        console.log('positions', postions);
+        console.log('positions', postions.length);
         const orders = kc.getOrders().then((data) => {
             //console.log(moment().format(), orders )
         }).catch((e) => {
@@ -76,7 +76,7 @@ function init() {
     let lastTicksGrouped;
     function onTicks(ticks) {
         // timestamp in ticks is in second, always convert to millisecond for conversion
-        // console.log(ticks);
+        console.log(ticks);
         const grouped = _.groupBy(ticks, 'instrument_token');
         if (!grouped[`${constants.NIFTY}`]) {
             grouped[`${constants.NIFTY}`] = lastTicksGrouped[`${constants.NIFTY}`];
@@ -94,7 +94,7 @@ function init() {
         if  (tickCount === 0) {
             console.log('grouped', grouped);
             console.log('ticks.length', ticks);
-            // ignore first tick when not multiple of 5minute
+            // ignore first tick when not multiple of 15minute
             // otherwise candle will shift
             console.log(ticks[0].timestamp, secondsTimeStamp%900);
             if ( secondsTimeStamp%900 !== 0) {
@@ -138,7 +138,7 @@ function init() {
             if(diff%10 === 0) {
                 fs.appendFileSync('./tickData.json', JSON.stringify(grouped));
             }
-            // after 5 minutes create and emit candle
+            // after 15 minutes create and emit candle
             if (diff >= 900) {
                 createAndEmitCandle(store);
                 store = [];
@@ -154,17 +154,23 @@ function init() {
         const nifty = _.map(data, (item)  => item[0]);
         const call = _.map(data, (item)  => item[1]);
         const put = _.map(data, (item)  => item[2]);
-        const candle = {
+        const candleData = {
             ...getCandle(nifty),
-            callCandle: getCandle(call),
-            putCandle: getCandle(put),
+            callCandle: utils.includeRSI(getCandle(call, lastCandle.callCandle)),
+            putCandle: utils.includeRSI(getCandle(put, lastCandle.putCandle)),
             callChart,
             putChart,
         };
+        
+        const candle = utils.includeRSI(candleData, lastCandle)
+
         if(lastCandle) {
             candle.previousClose =  lastCandle.close;
+            candle.previousRSI = lastCandle.rsi;
         }   
-        emitter.emit('5-minute-candle', candle);
+        console.log(candle);
+        // emitter.emit('5-minute-candle', candle);
+        console.log("----15 min candle--->", candle)
         lastCandle = candle;
 
     }
@@ -182,7 +188,8 @@ function init() {
 
 
     function subscribe() {
-        var items = [constants.NIFTY, constants.CALL_WEEKLY.chartId, constants.PUT_WEEKLY.chartId];
+        // var items = [constants.NIFTY, constants.CALL_WEEKLY.chartId, constants.PUT_WEEKLY.chartId];
+        var items = [constants.NIFTY];
         console.log('subscribed');
         ticker.subscribe(items);
         ticker.setMode(ticker.modeFull, items);

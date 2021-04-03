@@ -2,15 +2,17 @@ const charts = {
     'NIFTY19D1912100CE': 11298050,
     'NIFTY19D1912000PE': 11296770,
     'NIFTY': 256265,
+    // 'NIFTY': 58108679,
 };
 
 module.exports = {
-    API_KEY: "a062yq2tywqk1e4j",
-    API_SECRET: "im93kns7sjst8ylg8y7ubypjtmz4dqgr",
-    REQUEST_TOKEN: "fF0QTR6hAJzSyAFnkjWUL2iKT5wNdyzb",
+    API_KEY: "axtws9lg5tx5oonh",
+    API_SECRET: "zfvu6s5u1llgwv54mgmrqdivbzdmru29",
+    REQUEST_TOKEN: "IU21Hgx3P4m85PWOFjyAsuiRlFteW71z",
     CALL_WEEKLY: { chartId: 9907714, symbol: "NIFTY19D1912250CE" },
     PUT_WEEKLY: { chartId: 9907970, symbol: "NIFTY19D1912150PE" },
     NIFTY: charts.NIFTY,
+    EXPIRY: "NIFTY21APR",
     chartByStrike: {
         call: {
             11800: {
@@ -125,4 +127,4 @@ module.exports = {
 };
 
 
-// https://kite.trade/connect/login?api_key=a062yq2tywqk1e4j&v=3
+// https://kite.trade/connect/login?api_key=axtws9lg5tx5oonh&v=3

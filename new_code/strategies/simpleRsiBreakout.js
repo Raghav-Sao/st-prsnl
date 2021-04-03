@@ -2,20 +2,15 @@ const StockExchange  = require("../stockExchange");
 const moment =  require('moment');
 
 const SimpleRsiBreakOutStrategy = {
-    capital: 0,
+    capital: 100,
 };
 
 SimpleRsiBreakOutStrategy.checkCondition = (candle) => {
     if (candle.noTrade) return;
     // ((candle.rsi - candle.lastCandle.rsi) > 2)
-    if ((candle.rsi21 > 52 && candle.lastCandle.rsi21 <= 50) ) {
-        SimpleRsiBreakOutStrategy.tradeCondition = 'call';
+    if ((candle.rsi21 > 60 && candle.lastCandle.rsi21 <= 60) ) {
+        SimpleRsiBreakOutStrategy.tradeCondition = 'buy';
         return true;
-    } else if ((candle.rsi21 <  46 && candle.lastCandle.rsi21 >= 50)) {
-        console.log(candle.rsi, candle.rsi21);
-        // ((candle.lastCandle.rsi - candle.rsi) > 2)
-        // SimpleRsiBreakOutStrategy.tradeCondition = 'put';
-        // return true;
     }
     return false;
 }
@@ -26,56 +21,39 @@ SimpleRsiBreakOutStrategy.init = () => {
     }
 
     StockExchange.on('shutDown', (candle) => {
-        SimpleRsiBreakOutStrategy.closeTrade(candle, 'shutDown');
+        SimpleRsiBreakOutStrategy.closeTrade(candle, 'shutDown', candle.close);
     });
 }
 
 SimpleRsiBreakOutStrategy.stockExchangeListener = (candle) => {
-    if (SimpleRsiBreakOutStrategy.tradeCondition) return;
+    // console.log("------------------------------------------------------------------------>");
+    // console.log(candle.time, candle.rsi);
+    // console.log("------------------------------------------------------------------------>");
+    if (SimpleRsiBreakOutStrategy.tradeCondition) {
+        return
+    } else {
+        console.log(candle.rsi21, candle.time);
+    }
     if (SimpleRsiBreakOutStrategy.checkCondition(candle)) {
         SimpleRsiBreakOutStrategy.startCandle = candle;
-        SimpleRsiBreakOutStrategy.invested = candle[SimpleRsiBreakOutStrategy.tradeCondition].close;
-        SimpleRsiBreakOutStrategy.capital = SimpleRsiBreakOutStrategy.capital - candle[SimpleRsiBreakOutStrategy.tradeCondition].close ;
-        SimpleRsiBreakOutStrategy.stopLoss = SimpleRsiBreakOutStrategy.tradeCondition === 'buy' ? candle.high : candle.low;
-        StockExchange.on('candleData', SimpleRsiBreakOutStrategy.checkTradeStopCondition);
+        SimpleRsiBreakOutStrategy.invested = candle.close;
+        SimpleRsiBreakOutStrategy.capital = SimpleRsiBreakOutStrategy.capital - candle.close;
+        SimpleRsiBreakOutStrategy.stopLoss = candle.low;
+        // StockExchange.on('candleData', SimpleRsiBreakOutStrategy.checkTradeStopCondition);
+        StockExchange.on('eachTickerData', SimpleRsiBreakOutStrategy.checkTradeStopCondition);
     }
 }
 
 SimpleRsiBreakOutStrategy.checkTradeStopCondition = (candle) => {
-    
-    
-    if (SimpleRsiBreakOutStrategy.tradeCondition === 'call') {
-        if (candle.close <= SimpleRsiBreakOutStrategy.stopLoss) {
-            SimpleRsiBreakOutStrategy.closeTrade(candle , 'stoploss');
-            return;
-        }
-        if (candle.rsi < 70 && candle.lastCandle.rsi >= 70) {
-            SimpleRsiBreakOutStrategy.closeTrade(candle, 'crossingDown70');
-        } else {
-            const isPeak = (candle.rsi < candle.lastCandle.rsi) &&  (candle.lastCandle.rsi > candle.lastCandle.rsi1);
-            // && SimpleRsiBreakOutStrategy.lastPeak && (SimpleRsiBreakOutStrategy.lastPeak  > candle.lastCandle.rsi)
-            if (isPeak && SimpleRsiBreakOutStrategy.lastPeak && (SimpleRsiBreakOutStrategy.lastPeak  < candle.lastCandle.rsi) ) {
-                SimpleRsiBreakOutStrategy.closeTrade(candle,  'secondLowerPeak');
-            } else {
-                SimpleRsiBreakOutStrategy.lastPeak = candle.lastCandle.rsi;
-            }
-        }
-    } else if(SimpleRsiBreakOutStrategy.tradeCondition === 'put'){
-        if (candle.close >= SimpleRsiBreakOutStrategy.stopLoss) {
-            SimpleRsiBreakOutStrategy.closeTrade(candle , 'stoploss');
-            return;
-        }
-        if (candle.rsi > 30 && candle.lastCandle.rsi <= 30) {
-            SimpleRsiBreakOutStrategy.closeTrade(candle, 'crossingUp30');
-        } else {
-            const isCup = (candle.rsi > candle.lastCandle.rsi) &&  (candle.lastCandle.rsi < candle.lastCandle.rsi1);
-            //
-            if (isCup && SimpleRsiBreakOutStrategy.lastCup && (SimpleRsiBreakOutStrategy.lastCup  > candle.lastCandle.rsi)) {
-                SimpleRsiBreakOutStrategy.closeTrade(candle,  'secondLowerPeak');
-            } else {
-                SimpleRsiBreakOutStrategy.lastCup = candle.lastCandle.rsi;
-            }
-        }
+    if (candle.price < SimpleRsiBreakOutStrategy.stopLoss) {
+        SimpleRsiBreakOutStrategy.closeTrade(candle , 'stoploss', SimpleRsiBreakOutStrategy.stopLoss);
+        return;
+    }
+    const profit = candle.price - SimpleRsiBreakOutStrategy.startCandle.close;
+    const perProfit = (SimpleRsiBreakOutStrategy.startCandle.close * 90) / 100;
+    if(profit >= perProfit) {
+        SimpleRsiBreakOutStrategy.closeTrade(candle , 'profitBooking', SimpleRsiBreakOutStrategy.startCandle.close+perProfit);
+        return;
     }
 }
 
@@ -97,23 +75,25 @@ SimpleRsiBreakOutStrategy.setSummary =  (candle)=> {
    SimpleRsiBreakOutStrategy.summary[day].total += (candle[SimpleRsiBreakOutStrategy.tradeCondition].close  - SimpleRsiBreakOutStrategy.invested - (40/500))
 }
 
-SimpleRsiBreakOutStrategy.closeTrade = (candle , reason='') => {
+SimpleRsiBreakOutStrategy.closeTrade = (candle , reason='', profit) => {
     if (!SimpleRsiBreakOutStrategy.tradeCondition)  return;
     console.log(SimpleRsiBreakOutStrategy.tradeCondition,SimpleRsiBreakOutStrategy.invested );
-    SimpleRsiBreakOutStrategy.capital = SimpleRsiBreakOutStrategy.capital +  candle[SimpleRsiBreakOutStrategy.tradeCondition].close  - (40/500);
-    SimpleRsiBreakOutStrategy.setSummary(candle);
-    console.log(`Trade close - ${reason} profit:  ${candle[SimpleRsiBreakOutStrategy.tradeCondition].close  -  SimpleRsiBreakOutStrategy.invested - 40/500}`);
+    SimpleRsiBreakOutStrategy.capital = SimpleRsiBreakOutStrategy.capital +  profit;
+    // SimpleRsiBreakOutStrategy.setSummary(candle);
+    console.log(`Trade close - ${reason} profit:  ${profit-SimpleRsiBreakOutStrategy.startCandle.close}`);
     console.log(`capital : ${SimpleRsiBreakOutStrategy.capital}`);
     console.log(SimpleRsiBreakOutStrategy.startCandle.time, candle.time);
     console.log(SimpleRsiBreakOutStrategy.startCandle.rsi, candle.rsi);
+    console.log("------->\n")
     SimpleRsiBreakOutStrategy.tradeCondition = null;
     SimpleRsiBreakOutStrategy.startCandle = null;
     SimpleRsiBreakOutStrategy.invested = null;
     SimpleRsiBreakOutStrategy.stopLoss = null;
     SimpleRsiBreakOutStrategy.lastPeak = null;
     SimpleRsiBreakOutStrategy.lastCup = null;
-    console.log(JSON.stringify(SimpleRsiBreakOutStrategy.summary));
-    StockExchange.removeListener('candleData', SimpleRsiBreakOutStrategy.checkTradeStopCondition);
+    // console.log(JSON.stringify(SimpleRsiBreakOutStrategy.summary));
+    // StockExchange.removeListener('candleData', SimpleRsiBreakOutStrategy.checkTradeStopCondition);
+    StockExchange.removeListener('eachTickerData', SimpleRsiBreakOutStrategy.checkTradeStopCondition);
 }
 
 module.exports = SimpleRsiBreakOutStrategy;

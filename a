@@ -1,0 +1,54 @@
+REQUEST_TOKEN IU21Hgx3P4m85PWOFjyAsuiRlFteW71z
+REQUEST_TOKEN IU21Hgx3P4m85PWOFjyAsuiRlFteW71z
+response { access_token: 'access_token', public_token: 'public_token' }
+{ callStrike: 12000, putStrike: 12200, niftyStrike: 12000 }
+{ instrument_tokens: {} }
+sfasfas
+[ 256265 ] {} 'hello'
+subscribed token is---> [ 256265 ]
+noreconnect
+Reconnecting: attempt -  undefined  interval -  undefined
+658
+here
+ticker
+ticks ---------->
+2021-04-01T15:15:00+05:30
+2021-04-01T15:00:00+05:30
+{ token: 256265 }
+ticker
+ticks ---------->
+ignoring initial ticks at -  2021-04-01T15:20:00+05:30
+ticker
+ticks ---------->
+ignoring initial ticks at -  2021-04-01T15:25:00+05:30
+ticker
+ticks ---------->
+2021-04-01T15:30:00+05:30
+2021-04-01T15:15:00+05:30
+{ token: 256265 }
+659
+response { user_type: 'individual',
+  email: 'saoraghavendra@gmail.com',
+  user_name: 'Raghavendra Sao',
+  user_shortname: 'Raghavendra',
+  broker: 'ZERODHA',
+  exchanges: [ 'BFO', 'CDS', 'BSE', 'MCX', 'NFO', 'MF', 'NSE' ],
+  products: [ 'CNC', 'NRML', 'MIS', 'BO', 'CO' ],
+  order_types: [ 'MARKET', 'LIMIT', 'SL', 'SL-M' ],
+  avatar_url: null,
+  user_id: 'YM0807',
+  api_key: 'axtws9lg5tx5oonh',
+  access_token: 'HaHVfCaz9yX12pf2TPtdP2uLVy3CoiLw',
+  public_token: 'qRilrU5wOzcVGdW8jcp95zV7A8ZEC2t8',
+  refresh_token: '',
+  silo: '',
+  login_time: 2021-04-02T03:36:07.000Z,
+  meta: { demat_consent: 'physical' } }
+{ status: 'error',
+  message: 'Invalid `api_key` or `access_token`.',
+  data: null,
+  error_type: 'InputException' } 'error......'
+{ status: 'error',
+  message: 'Invalid `api_key` or `access_token`.',
+  data: null,
+  error_type: 'InputException' } 'error......'

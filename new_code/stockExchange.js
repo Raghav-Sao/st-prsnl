@@ -4,7 +4,7 @@ const _ =  require('lodash');
 
 const fs = require('fs');
 const moment = require("moment");
-let rawdata = fs.readFileSync('./data/nifty_1_min.json');
+let rawdata = fs.readFileSync('./data/nifty_15_min_11800ce.json');
 const callData = _.groupBy(_.map(JSON.parse(fs.readFileSync('./data/week/11900_ce.json')).data.candles, (data) => {
     return {
         time: data[0],
@@ -38,13 +38,13 @@ function emitStockData(data, index, lastCandle = null) {
         }
         const hours = moment(data[0]).hours();
         const minutes = moment(data[0]).minutes(); 
-        if (hours < 10) {
-            transformedCandle.noTrade = true;
-        }
+        // if (hours < 10) {
+        //     transformedCandle.noTrade = true;
+        // }
         transformedCandle.lastCandle = lastCandle;
          // console.log(transformedCandle.time);   
-        transformedCandle.call  = callData[transformedCandle.time][0]  ||  {};
-        transformedCandle.put  = putData[transformedCandle.time][0] || {};
+        // transformedCandle.call  = callData[transformedCandle.time][0]  ||  {};
+        // transformedCandle.put  = putData[transformedCandle.time][0] || {};
 
         const move = transformedCandle.close - (lastCandle ? lastCandle.close : 0);
         const upMove = move > 0 ? move : 0;
@@ -63,7 +63,7 @@ function emitStockData(data, index, lastCandle = null) {
         const rs = upMoveAvg/downMoveAvg;
         const rs21 = upMoveAvg21/downMoveAvg21;
         const rsi = (100 - (100/ (1 + rs)));
-        const rsi21 = (100 - (100/ (1 + rs21)));
+        const rsi21 = rsi;
         transformedCandle.upMoveAvg = upMoveAvg;
         transformedCandle.downMoveAvg = downMoveAvg;
         transformedCandle.upMoveAvg21 = upMoveAvg21;
@@ -73,7 +73,7 @@ function emitStockData(data, index, lastCandle = null) {
 
         if (hours >= 15 && minutes >= 0) {
             transformedCandle.noTrade = true;
-            if (hours === 15 && minutes === 20) {
+            if (hours === 15 && minutes === 15) {
                 StockExchange.emit('shutDown', transformedCandle);
             } else {
                 StockExchange.emit('candleData', transformedCandle);
