@@ -21,6 +21,7 @@ function rsi60({ capital, tickInterval, noNewTradeTime , shutDownTime}, Exchange
     // change this value to morning 9:15 candle incase of restart
     let activeTrade = null;
     let stopLoss = null;
+    let target = null;
     let lots;
     let currentCandle;
     let totalLots;
@@ -34,7 +35,54 @@ function rsi60({ capital, tickInterval, noNewTradeTime , shutDownTime}, Exchange
     };
 
     const stopLossCondition = (candle, stopLoss) => {
+        console.log("stopLossCondition", candle.close, stopLoss)
         return candle.close <= stopLoss
+    }
+
+    const targetCondition = (candle, target) => {
+        console.log("targetCondition", candle.close, target)
+
+        return candle.close >= target;
+    }
+
+    const handleEachTick = tick => {
+        console.log(tick, "handleEachTick");
+        const lastPrice = tick && tick[0] && tick[0].last_price;
+        console.log(tick, "handleEachTick", lastPrice);
+        if(!lastPrice) {
+            return;
+        }
+        const candle = {
+            close: lastPrice
+        }
+        if (stopLossCondition(candle, stopLoss)) {
+            console.log({stopLoss}, "achived")
+            emitter.emit("endTrade", {
+                candle,
+                tradeType: activeTrade,
+                lots,
+                capital,
+                event: "endTrade",
+                // rsi: candle.rsi,
+                // previousRSI: candle.previousRSI,
+            });
+            return;
+        }
+        if(targetCondition(candle, target)) {
+            console.log({target}, "achived")
+            emitter.emit("endTrade", {
+                candle,
+                tradeType: activeTrade,
+                lots,
+                capital,
+                event: "profitBooking",
+                profitBooking: true
+                // rsi: candle.rsi,
+                // previousRSI: candle.previousRSI,
+            });
+            return;
+        }
+        
     }
 
     const handler = (candle) => {
@@ -87,8 +135,10 @@ function rsi60({ capital, tickInterval, noNewTradeTime , shutDownTime}, Exchange
             activeTrade = tradeStartCondition(candle);
 
             if (activeTrade) {
-                console.log("starting trade");
+                
                 stopLoss = candle.low;
+                target = candle.close + 30; //taget
+                console.log("starting trade with sl and target is" + stopLoss + "->" + target);
                 const investment = calculateInvestment(activeTrade, candle, capital);
                 totalLots = investment.lots;
                 emitter.emit('startTrade', {
@@ -100,6 +150,7 @@ function rsi60({ capital, tickInterval, noNewTradeTime , shutDownTime}, Exchange
                     rsi: candle.rsi,
                     previousRSI: candle.previousRSI,
                 });
+                Exchange.on("tick-candle", handleEachTick); //add callback
                 return;
             }
         } else if (activeTrade) {
@@ -127,6 +178,8 @@ function rsi60({ capital, tickInterval, noNewTradeTime , shutDownTime}, Exchange
         totalLots = 0;
         activeTrade = null;
         stopLoss = null;
+        target = null;
+        Exchange.removeListener("tick-candle", handleEachTick);
     }
 
     const dayReset = () => {

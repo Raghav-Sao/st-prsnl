@@ -44,6 +44,9 @@ function trader(strategy) {
         if (data.isDayEnd) {
             onDayEnd();
         }
+        if(data.profitBooking) {
+            console.log({profitBooking: data.profitBooking}, "done");
+        }
         return
         const chart = getChart(data);
         const price = getPrice(data.tradeType, data.candle);

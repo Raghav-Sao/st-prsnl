@@ -238,6 +238,8 @@ async function init() {
             if (diff >= INTERVAL) {
                 createAndEmitCandle(store);
                 store = [];
+            } else {
+                emitter.emit('tick-candle', transformed);
             }
         }
         
