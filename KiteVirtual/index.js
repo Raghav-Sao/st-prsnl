@@ -4,16 +4,19 @@ const path = require('path');
    
 const mapedToken ={
     "NIFTY21APR14700CE": 17060610,
-    "NIFTY21APR14900PE": 17063938
+    "NIFTY21APR14900PE": 17063938,
+    "NIFTY2140814700CE": 11217666
 }
 const rawdata17060610 = fs.readFileSync(path.join(__dirname, './data/nifty18-02apr-15min.json')); 
 const rawdata17063938 = fs.readFileSync(path.join(__dirname,'./data/14900pe-18-02apr-15min.json')); 
 const rawdata256265 = fs.readFileSync(path.join(__dirname,'./data/historicalData.json'));
+const rawdata11217666 = fs.readFileSync(path.join(__dirname,'./data/CEhistoricalData.json'));
 
 
 const _17060610 = JSON.parse(rawdata17060610);
 const _17063938 = JSON.parse(rawdata17063938);
 const _256265 = JSON.parse(rawdata256265);
+const _11217666 = JSON.parse(rawdata11217666);
 
 
 function KiteConnect() {
@@ -90,7 +93,7 @@ function KiteConnect() {
 
 function KiteTicker() {
     this.subscribedToken = [];
-    this.tickerCount = 648;
+    this.tickerCount = 0;
     this.autoReconnect = () => {
 
     }
@@ -122,7 +125,7 @@ function KiteTicker() {
         
         this.interval = setInterval(() => {
             console.log(this.tickerCount)
-            if(this.tickerCount >=655) {
+            if(this.tickerCount >=10) {
                 clearInterval(this.interval);
                 return
             }

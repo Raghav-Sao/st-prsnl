@@ -137,7 +137,7 @@ function rsi60({ capital, tickInterval, noNewTradeTime , shutDownTime}, Exchange
             if (activeTrade) {
                 
                 stopLoss = candle.low;
-                target = candle.close + 30; //taget
+                target = candle.close * 1.1; //taget
                 console.log("starting trade with sl and target is" + stopLoss + "->" + target);
                 const investment = calculateInvestment(activeTrade, candle, capital);
                 totalLots = investment.lots;
