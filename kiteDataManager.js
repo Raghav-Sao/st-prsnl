@@ -64,8 +64,8 @@ async function getHistoricalData({ instrumentToken, interval, fromDate, toDate})
 
                 // let fromStr = new Date("2021-04-01T03:45:00.000Z");
                 // fromStr = fromStr.getFullYear
-                const fSTR = moment(fromDate).format("YYYY-MM-DD HH:mm:SS").utcOffset("+05:30");
-                const tSTR = moment(toDate).format("YYYY-MM-DD HH:mm:SS").utcOffset("+05:30");
+                const fSTR = moment(fromDate).utcOffset("+05:30").format("YYYY-MM-DD HH:mm:SS");
+                const tSTR = moment(toDate).utcOffset("+05:30").format("YYYY-MM-DD HH:mm:SS");
                 // const fSTR = moment("2021-04-01T03:45:00.000Z").format("YYYY-MM-DD HH:mm:SS");
                 // const tSTR = moment("2021-04-01T09:45:00.000Z").format("YYYY-MM-DD HH:mm:SS");
                 // const res1 = await kc.getHistoricalData(token, interval, fSTR, tSTR);
