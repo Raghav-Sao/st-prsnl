@@ -43,14 +43,14 @@ const getInstruments = async(niftyStrike) => {
     const tradingsymbols = [`${EXPIRY}${callStrike}CE`, `${EXPIRY}${putStrike}PE`] 
     console.log({callStrike, putStrike, niftyStrike});
     const callTradingsymbol = 'callStrike'
-    const struments = await kc.getInstruments(['MCX'])
+    const struments = await kc.getInstruments(['FNO'])
     const filteredData = struments.filter(data => {
         return tradingsymbols.includes(data.tradingsymbol)
     });
     instrument_tokens = {};
-    filteredData.forEach(data => {
-        instrument_tokens[data.tradingsymbol] = data.instrument_token;
-    });
+    // filteredData.forEach(data => {
+    //     instrument_tokens[data.tradingsymbol] = data.instrument_token;
+    // });
     console.log({instrument_tokens});
     return instrument_tokens;
 }
@@ -178,15 +178,18 @@ async function init() {
                 console.log(moment(toDate).utcOffset("+05:30").format(), "todate");
                 console.log(moment(fromDate).utcOffset("+05:30").format(), "fromDate");
                 // const data = await getHistoricalData2({instrumentTokens: subscribedToken, interval: '15minute', toDate, fromDate}) ??
-                getHistoricalData2({instrumentTokens: subscribedToken, interval: '15minute', toDate, fromDate}).then(data => {
-                    let lastCandle;
-                    data.forEach( candle => {
-                        lastCandle = includeRSI(candle, lastCandle);
-                        // console.log(lastCandle.rsi, "----->")
+                subscribedToken.forEach((instrumentToken) => {
+                    getHistoricalData2({instrumentToken, interval: '15minute', toDate, fromDate}).then(data => {
+                        let lastCandle;
+                        data.forEach( candle => {
+                            lastCandle = includeRSI(candle, lastCandle);
+                            // console.log(lastCandle.rsi, "----->")
+                        })
+                        console.log(lastCandle.rsi, "----->")
+                        lastHistoricalCandle = lastCandle;
                     })
-                    console.log(lastCandle.rsi, "----->")
-                    lastHistoricalCandle = lastCandle;
                 })
+                
                 
                 //get historical data from last atleasrt 200 candle calculate rsi and add to last candle data;
             }
@@ -286,10 +289,10 @@ async function init() {
 
     function subscribe() {
         subscribedToken = [constants.NIFTY];
-        // for (const key in instrument_tokens) {
-        //     console.log(key, "key");
-        //     subscribedToken.push(parseInt(instrument_tokens[key]))
-        // }
+        for (const key in instrument_tokens) {
+            console.log(key, "key");
+            subscribedToken.push(parseInt(instrument_tokens[key]))
+        }
         console.log(subscribedToken, instrument_tokens,"hello" );
         console.log('subscribed token is--->', subscribedToken);
         ticker.subscribe(subscribedToken);

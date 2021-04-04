@@ -23,7 +23,7 @@ const kc = new KiteConnect({
 
 
 
-async function getHistoricalData({ instrumentTokens, interval, fromDate, toDate}) {
+async function getHistoricalData({ instrumentToken, interval, fromDate, toDate}) {
     return new Promise((resolve, reject) => {
 
         kc.generateSession(REQUEST_TOKEN, constants.API_SECRET)
@@ -34,7 +34,7 @@ async function getHistoricalData({ instrumentTokens, interval, fromDate, toDate}
             // console.log("response", response);
             init();
         
-        console.log("here", { instrumentTokens, interval, fromDate, toDate})
+        console.log("here", { instrumentToken, interval, fromDate, toDate})
         const today = new Date();
         // if(instrument_tokens.length < 1) {
         //     return {success: false, data: []};
@@ -54,7 +54,6 @@ async function getHistoricalData({ instrumentTokens, interval, fromDate, toDate}
         // console.log(instrumentTokens, interval, fromDate, toDate,"-->");
     
             // instrumentTokens.forEach(async token => {
-                const token = instrumentTokens[0]
                 try {
                 // const res = await kc.getHistoricalData(token, interval, fromDate, toDate);
                 // const res = await kc.getHistoricalData(token, interval, new Date("2021-04-01T03:45:00.000Z"), new Date("2021-04-01T09:45:00.000Z"));
@@ -72,14 +71,14 @@ async function getHistoricalData({ instrumentTokens, interval, fromDate, toDate}
                 // const res1 = await kc.getHistoricalData(token, interval, fSTR, tSTR);
                 console.log(fSTR, tSTR);
                 // const res1 = await kc.getHistoricalData(token, interval, new Date("2021-04-01 09:15:00"),  new Date("2021-04-01 15:15:00"));
-                const res1 = await kc.getHistoricalData(token, interval, fSTR,  tSTR);
+                const res1 = await kc.getHistoricalData(instrumentToken, interval, fSTR,  tSTR);
                 // const res1 = await kc.getHistoricalData(token, interval, fSTR,  tSTR);
                 // console.log(JSON.stringify(res1));
 
 
                 resolve(res1);
             } catch(error) {
-                reject(error)
+                reject([])
                 console.log(error,"error......");
             }
                 //calculate rsi for last candle and add to last candle

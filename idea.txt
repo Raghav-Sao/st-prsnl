@@ -1,0 +1,16 @@
+const { CandleList } = require("technicalindicators")
+
+1. store every tick if before and after tick makes diff > min MediaKeyStatusMap
+2. one tick time >= nex min emmit 1 min candle and also store into minut ticker memotry
+3. on every >= 5 min diff get last 5 min data and emmit
+4. on every >=10 min diff get last 10 min data and emmit
+5. on every >=15 min diff get last 15 min data and emmit
+6. on every >=50 min diff get last 60 min data and emmit
+
+middleware who will also memories the last 5/15/60 min data with rsi also it can get current 15 min even if 15 min is not completed
+
+
+
+
+]
+
