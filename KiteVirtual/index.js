@@ -1,7 +1,7 @@
 const constants = require('../constants');
 const fs = require('fs');
 const path = require('path');
-   
+const INSTRUMENT_TOKEN = process.argv[3];
 const mapedToken ={
     "NIFTY21APR14700CE": 17060610,
     "NIFTY21APR14900PE": 17063938,
@@ -72,7 +72,7 @@ function KiteConnect() {
         const promise = new Promise((resolve, reject) => {
             try {
                 const res = {
-                    [constants.NIFTY]: {
+                    [INSTRUMENT_TOKEN]: {
                         last_price: 12000,
                     }
                 }

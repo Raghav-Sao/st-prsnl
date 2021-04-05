@@ -2,11 +2,11 @@ const EventEmitter = require('events');
 const emitter = new EventEmitter();
 const moment = require('moment');
 const _ =  require('lodash');
-// var KiteTicker = require("./KiteVirtual").KiteTicker;
-// const KiteConnect = require("./KiteVirtual").KiteConnect;
-const getHistoricalData2 = require('./kiteDataManager').getHistoricalData;
-var KiteTicker = require("kiteconnect").KiteTicker;
-const KiteConnect = require("kiteconnect").KiteConnect;
+var KiteTicker = require("./KiteVirtual").KiteTicker;
+const KiteConnect = require("./KiteVirtual").KiteConnect;
+const getHistoricalData = require('./kiteDataManager').getHistoricalData;
+// var KiteTicker = require("kiteconnect").KiteTicker;
+// const KiteConnect = require("kiteconnect").KiteConnect;
 const constants = require('./constants');
 const utils = require('./utils');
 const fs = require('fs');
@@ -15,7 +15,8 @@ const INTERVAL = 900;
 let ACCESS_TOKEN;
 let PUBLIC_TOKEN;
 let REQUEST_TOKEN = process.argv[2];
-
+let INSTRUMENT_TOKEN = process.argv[3];
+let CHART_SYMBOL = process.argv[4];
 
 let lastHistoricalCandle = [];
 const EXPIRY = constants.EXPIRY;
@@ -24,7 +25,7 @@ let instrument_tokens = {};
 const kc = new KiteConnect({
 	api_key: constants.API_KEY
 });
-
+let kcc;
 kc.generateSession(REQUEST_TOKEN, constants.API_SECRET)
 	.then(function(response) {
         ACCESS_TOKEN = response.access_token;
@@ -55,43 +56,6 @@ const getInstruments = async(niftyStrike) => {
     return instrument_tokens;
 }
 
-
-
-async function getHistoricalData({ instrumentTokens, interval, fromDate, toDate}) {
-    
-    const today = new Date();
-    if(instrument_tokens.length < 1) {
-        return {success: false, data: []};
-    }
-
-    if(!interval) {
-        return {success: false, data: []};
-    }
-
-    if(!fromDate) {
-        fromDate = new Date(today.getFullYear(), today.getMonth(), today.getDate()-40);
-    }
-
-    if(!toDate) {
-        toDate = today;
-    }
-    console.log(instrumentTokens, interval, fromDate, toDate);
-   
-        instrumentTokens.forEach(async token => {
-            try {
-            const res = await kc.getHistoricalData(token, interval, fromDate, toDate);
-            // const candle = res.data.candels;
-            // console.log(JSON.stringify(res));
-        } catch(error) {
-            console.log(error);
-        }
-            //calculate rsi for last candle and add to last candle
-        })
-    
-    
-
-}
-
 async function init() {   
     setInterval(async () => {
         const postions = await kc.getPositions();
@@ -108,7 +72,7 @@ async function init() {
         });
     }, 10*1000);
 
-    try {
+    /*try {
 
         const data = await kc.getLTP([constants.NIFTY]);
         const niftyStrike = data[constants.NIFTY].last_price;
@@ -116,7 +80,7 @@ async function init() {
     }
     catch(error) {
         console.log({error});
-    }
+    }*/
 
     
     const ticker = new KiteTicker({
@@ -179,7 +143,9 @@ async function init() {
                 console.log(moment(fromDate).utcOffset("+05:30").format(), "fromDate");
                 // const data = await getHistoricalData2({instrumentTokens: subscribedToken, interval: '15minute', toDate, fromDate}) ??
                 subscribedToken.forEach((instrumentToken) => {
-                    getHistoricalData2({instrumentToken, interval: '15minute', toDate, fromDate, kc}).then(data => {
+                    getHistoricalData({instrumentToken, interval: '15minute', toDate, fromDate, kc}).then(res => {
+                        const {data, kitek } = res;
+                        kcc = kitek;
                         let lastCandle;
                         data.forEach( candle => {
                             lastCandle = includeRSI(candle, lastCandle);
@@ -290,7 +256,7 @@ async function init() {
 
 
     function subscribe() {
-        subscribedToken = [constants.NIFTY];
+        subscribedToken = [INSTRUMENT_TOKEN];
         for (const key in instrument_tokens) {
             console.log(key, "key");
             subscribedToken.push(parseInt(instrument_tokens[key]))
@@ -305,11 +271,11 @@ async function init() {
 
 const buy = async ({chart, lots}) => {
     chart = {
-        symbol: "NIFTY2140814600PE",
+        symbol: CHART_SYMBOL,
     };
     console.log('buy')
     console.log(chart, lots);
-    return kc.placeOrder('regular', {
+    return kcc.placeOrder('regular', {
          exchange: 'NFO',
          tradingsymbol: chart.symbol,
          quantity: lots*75,
@@ -321,7 +287,7 @@ const buy = async ({chart, lots}) => {
 
  const sell = async ({chart, lots}) => {
     chart = {
-        symbol: "NIFTY2140814600PE",
+        symbol: CHART_SYMBOL,
     };
      console.log('sell')
      console.log(chart, lots);
@@ -331,10 +297,10 @@ const buy = async ({chart, lots}) => {
      console.log('targetPosition', targetPosition);
      const quantity = _.sum(_.map(targetPosition, 'quantity')) || 999999;
      console.log('Total quantity  available', quantity);
-     return kc.placeOrder('regular', {
+     return kcc.placeOrder('regular', {
         exchange: 'NFO',
         tradingsymbol: chart.symbol,
-        quantity: Math.min(lots*75, quantity),
+        quantity: Math.min(lots*75, quantity) || 1*75,
         order_type: "MARKET",
         product: "MIS",
         transaction_type: "SELL",
@@ -345,4 +311,5 @@ module.exports = {
     emitter,
     buy,
     sell,
+    getHistoricalData,
 }

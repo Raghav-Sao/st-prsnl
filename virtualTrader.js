@@ -12,9 +12,8 @@ function trader(strategy) {
     let dayProfit = 0;
     currentStrategyTrader.emitter.on('startTrade', (data) => {
         console.log("start buy");
-        return;
-        const chart = getChart(data);
-        const price = getPrice(data.tradeType, data.candle);
+        const chart = {};//getChart(data);
+        const price = data.candle.close;
         Exchange.buy({
             chart,
             lots: Number(data.lots),
@@ -28,12 +27,12 @@ function trader(strategy) {
                     text: `Bought ${chart.symbol}, lots - ${data.lots},   price - ${price} trade - ${JSON.stringify(trade)}`
                 });
             }).catch((e) => {
-                console.log(`BUY FAIL ${data.tradeType}  ${data.lots} ${data.candle.time}`);
+                console.log(`BUY FAIL ${data.tradeType}  ${data.lots} ${data.candle.time}`, e);
                 utils.sendEmail({
                     subject: 'URGENT!!!!!',
                     text: `BUY FAIL!!!!!! ${chart.symbol}, lots - ${data.lots}   price - ${price} \n ${JSON.stringify(e)} \n ${JSON.stringify(data)}`
                 });
-                currentStrategyTrader.tradeReset();
+                // currentStrategyTrader.tradeReset();
             });
         
     });
@@ -47,16 +46,15 @@ function trader(strategy) {
         if(data.profitBooking) {
             console.log({profitBooking: data.profitBooking}, "done");
         }
-        return
-        const chart = getChart(data);
-        const price = getPrice(data.tradeType, data.candle);
+        const chart = {};
+        const price = data.candle.close;
         const prospectProfit = dayProfit+ ((price  - startPrice)*currentStrategyTrader.getLots());
         let bookLots = data.lots;
-        if (prospectProfit >= 0.75*todaysCapital)  {
-            bookLots = currentStrategyTrader.getLots();
-        } else if (prospectProfit >= 0.5*todaysCapital) {
-            bookLots = Math.floor(currentStrategyTrader.getLots()*0.75); 
-        } 
+        // if (prospectProfit >= 0.75*todaysCapital)  {
+        //     bookLots = currentStrategyTrader.getLots();
+        // } else if (prospectProfit >= 0.5*todaysCapital) {
+        //     bookLots = Math.floor(currentStrategyTrader.getLots()*0.75); 
+        // } 
 
         Exchange.sell({
             chart,
@@ -92,7 +90,7 @@ function trader(strategy) {
             }
             
         }).catch((e) => {
-            console.log(`SELL FAIL ${data.tradeType}  ${bookLots} ${data.candle.time}`);
+            console.log(`SELL FAIL ${data.tradeType}  ${bookLots} ${data.candle.time}`, e);
             utils.sendEmail({
                 subject: 'URGENT!!!!!',
                 text: `SELL FAIL!!!!!! ${chart.symbol}, lots - ${bookLots}   price - ${price} \n ${JSON.stringify(e)}   \n ${JSON.stringify(data)}`

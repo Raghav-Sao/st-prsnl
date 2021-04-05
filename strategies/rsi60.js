@@ -10,6 +10,7 @@ const defaultShutDownTime = {minute: 10, hour: 15};
 const defaultTickInterval = 9000;
 let rsi;
 let previousRSI;
+const TARGET = process.argv[5];
 
 function rsi60({ capital, tickInterval, noNewTradeTime , shutDownTime}, Exchange) {
     noNewTradeTime = noNewTradeTime || defaultNoNewTradeTime;
@@ -137,7 +138,7 @@ function rsi60({ capital, tickInterval, noNewTradeTime , shutDownTime}, Exchange
             if (activeTrade) {
                 
                 stopLoss = candle.low;
-                target = candle.close * 1.1; //taget
+                target = candle.close * (TARGET && parseFloat(TARGET) || 1.1); //taget
                 console.log("starting trade with sl and target is" + stopLoss + "->" + target);
                 const investment = calculateInvestment(activeTrade, candle, capital);
                 totalLots = investment.lots;
@@ -235,7 +236,7 @@ function rsi60({ capital, tickInterval, noNewTradeTime , shutDownTime}, Exchange
 function calculateInvestment(tradeType, candle, capital, deployCapitalPercentage = 100, lotSize = 75) {
     const price = candle.close;
     const deployableCapital = (capital*deployCapitalPercentage)/ 100;
-    const lots =  Math.floor(deployableCapital/(price*lotSize));
+    const lots =  1;//Math.floor(deployableCapital/(price*lotSize));
     console.log(lots, deployableCapital);
     console.log(price);
     console.log('----');
