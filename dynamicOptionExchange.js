@@ -11,7 +11,7 @@ const constants = require('./constants');
 const utils = require('./utils');
 const fs = require('fs');
 const { includeRSI } = require('./utils');
-const INTERVAL = 300;
+const INTERVAL = 900;
 let ACCESS_TOKEN;
 let PUBLIC_TOKEN;
 let REQUEST_TOKEN = process.argv[2];
@@ -179,7 +179,7 @@ async function init() {
                 console.log(moment(fromDate).utcOffset("+05:30").format(), "fromDate");
                 // const data = await getHistoricalData2({instrumentTokens: subscribedToken, interval: '15minute', toDate, fromDate}) ??
                 subscribedToken.forEach((instrumentToken) => {
-                    getHistoricalData2({instrumentToken, interval: '5minute', toDate, fromDate, kc}).then(data => {
+                    getHistoricalData2({instrumentToken, interval: '15minute', toDate, fromDate, kc}).then(data => {
                         let lastCandle;
                         data.forEach( candle => {
                             lastCandle = includeRSI(candle, lastCandle);
@@ -304,8 +304,10 @@ async function init() {
 
 
 const buy = async ({chart, lots}) => {
+    chart = {
+        symbol: "NIFTY2140814600PE",
+    };
     console.log('buy')
-    return
     console.log(chart, lots);
     return kc.placeOrder('regular', {
          exchange: 'NFO',
@@ -318,8 +320,10 @@ const buy = async ({chart, lots}) => {
  };
 
  const sell = async ({chart, lots}) => {
+    chart = {
+        symbol: "NIFTY2140814600PE",
+    };
      console.log('sell')
-     return
      console.log(chart, lots);
      const positions = await kc.getPositions();
      console.log('positions', positions);
