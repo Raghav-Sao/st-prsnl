@@ -95,7 +95,7 @@ async function getHistoricalData({ instrumentTokens, interval, fromDate, toDate}
 async function init() {   
     setInterval(async () => {
         const postions = await kc.getPositions();
-        // console.log('positions', 'postions');
+        console.log('positions', 'postions');
         const orders = kc.getOrders().then((data) => {
             //console.log(moment().format(), orders )
         }).catch((e) => {
