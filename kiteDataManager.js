@@ -23,16 +23,16 @@ const kc = new KiteConnect({
 
 
 
-async function getHistoricalData({ instrumentToken, interval, fromDate, toDate}) {
-    return new Promise((resolve, reject) => {
+async function getHistoricalData({ instrumentToken, interval, fromDate, toDate, kc}) {
+    return new Promise(async (resolve, reject) => {
 
-        kc.generateSession(REQUEST_TOKEN, constants.API_SECRET)
-        .then(async function(response) {
-            console.log("response", response.access_token)
-            ACCESS_TOKEN = response.access_token;
-            PUBLIC_TOKEN = response.public_token;
-            // console.log("response", response);
-            init();
+        // kc.generateSession(REQUEST_TOKEN, constants.API_SECRET)
+        // .then(async function(response) {
+        //     console.log("response", response.access_token)
+        //     ACCESS_TOKEN = response.access_token;
+        //     PUBLIC_TOKEN = response.public_token;
+        //     // console.log("response", response);
+        //     init();
         
         console.log("here", { instrumentToken, interval, fromDate, toDate})
         const today = new Date();
@@ -92,7 +92,7 @@ async function getHistoricalData({ instrumentToken, interval, fromDate, toDate})
     console.log({err});
 });
     
-    });
+    // });
     
 }
 async function init() {  

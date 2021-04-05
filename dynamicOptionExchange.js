@@ -2,16 +2,16 @@ const EventEmitter = require('events');
 const emitter = new EventEmitter();
 const moment = require('moment');
 const _ =  require('lodash');
-var KiteTicker = require("./KiteVirtual").KiteTicker;
-const KiteConnect = require("./KiteVirtual").KiteConnect;
+// var KiteTicker = require("./KiteVirtual").KiteTicker;
+// const KiteConnect = require("./KiteVirtual").KiteConnect;
 const getHistoricalData2 = require('./kiteDataManager').getHistoricalData;
-// var KiteTicker = require("kiteconnect").KiteTicker;
-// const KiteConnect = require("kiteconnect").KiteConnect;
+var KiteTicker = require("kiteconnect").KiteTicker;
+const KiteConnect = require("kiteconnect").KiteConnect;
 const constants = require('./constants');
 const utils = require('./utils');
 const fs = require('fs');
 const { includeRSI } = require('./utils');
-const INTERVAL = 900;
+const INTERVAL = 300;
 let ACCESS_TOKEN;
 let PUBLIC_TOKEN;
 let REQUEST_TOKEN = process.argv[2];
@@ -145,7 +145,7 @@ async function init() {
     let lastTicksGrouped;
     async function onTicks(ticks) {
         // timestamp in ticks is in second, always convert to millisecond for conversion
-        console.log("ticks","---------->");
+        console.log("ticks","---------->", ticks[0].lastCandle);
         const grouped = _.groupBy(ticks, 'instrument_token');
         // console.log(grouped,subscribedToken )
         // return
@@ -165,7 +165,7 @@ async function init() {
             // const lastHistoricalCandle = await getHistoricalData({instrumentTokens: subscribedToken, interval: '15minute'});
             // console.log(lastHistoricalCandle);
             if (secondsTimeStamp%INTERVAL !== 0) {
-                console.log('ignoring initial ticks at - ', moment((secondsTimeStamp)*1000).utcOffset("+05:30").format());
+                console.log('ignoring initial ticks at - ', ticks[0].timestamp, secondsTimeStamp, moment((secondsTimeStamp)*1000).utcOffset("+05:30").format());
                 return;
             } else {
                 
@@ -179,7 +179,7 @@ async function init() {
                 console.log(moment(fromDate).utcOffset("+05:30").format(), "fromDate");
                 // const data = await getHistoricalData2({instrumentTokens: subscribedToken, interval: '15minute', toDate, fromDate}) ??
                 subscribedToken.forEach((instrumentToken) => {
-                    getHistoricalData2({instrumentToken, interval: '15minute', toDate, fromDate}).then(data => {
+                    getHistoricalData2({instrumentToken, interval: '5minute', toDate, fromDate, kc}).then(data => {
                         let lastCandle;
                         data.forEach( candle => {
                             lastCandle = includeRSI(candle, lastCandle);
