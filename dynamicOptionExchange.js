@@ -25,7 +25,7 @@ let instrument_tokens = {};
 const kc = new KiteConnect({
 	api_key: constants.API_KEY
 });
-let kcc;
+
 kc.generateSession(REQUEST_TOKEN, constants.API_SECRET)
 	.then(function(response) {
         ACCESS_TOKEN = response.access_token;
@@ -143,9 +143,7 @@ async function init() {
                 console.log(moment(fromDate).utcOffset("+05:30").format(), "fromDate");
                 // const data = await getHistoricalData2({instrumentTokens: subscribedToken, interval: '15minute', toDate, fromDate}) ??
                 subscribedToken.forEach((instrumentToken) => {
-                    getHistoricalData({instrumentToken, interval: '15minute', toDate, fromDate, kc}).then(res => {
-                        const {data, kitek } = res;
-                        kcc = kitek;
+                    getHistoricalData({instrumentToken, interval: '15minute', toDate, fromDate, kc}).then(data => {
                         let lastCandle;
                         data.forEach( candle => {
                             lastCandle = includeRSI(candle, lastCandle);
@@ -311,5 +309,4 @@ module.exports = {
     emitter,
     buy,
     sell,
-    getHistoricalData,
 }
