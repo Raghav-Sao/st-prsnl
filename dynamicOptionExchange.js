@@ -15,7 +15,7 @@ const INTERVAL = 900;
 let ACCESS_TOKEN;
 let PUBLIC_TOKEN;
 let REQUEST_TOKEN = process.argv[2];
-let INSTRUMENT_TOKEN = process.argv[3];
+let INSTRUMENT_TOKEN = parseInt(process.argv[3]);
 let CHART_SYMBOL = process.argv[4];
 
 let lastHistoricalCandle = [];
@@ -109,7 +109,7 @@ async function init() {
     let lastTicksGrouped;
     async function onTicks(ticks) {
         // timestamp in ticks is in second, always convert to millisecond for conversion
-        console.log("ticks","---------->", ticks[0].lastCandle);
+        console.log("ticks","---------->");
         const grouped = _.groupBy(ticks, 'instrument_token');
         // console.log(grouped,subscribedToken )
         // return
@@ -255,10 +255,10 @@ async function init() {
 
     function subscribe() {
         subscribedToken = [INSTRUMENT_TOKEN];
-        for (const key in instrument_tokens) {
-            console.log(key, "key");
-            subscribedToken.push(parseInt(instrument_tokens[key]))
-        }
+        // for (const key in instrument_tokens) {
+        //     console.log(key, "key");
+        //     subscribedToken.push(parseInt(instrument_tokens[key]))
+        // }
         console.log(subscribedToken, instrument_tokens,"hello" );
         console.log('subscribed token is--->', subscribedToken);
         ticker.subscribe(subscribedToken);

@@ -1,3 +1,5 @@
+node virtualTrader.js {token} 11217666 NIFTY2140814700CE  1.25
+
 const { CandleList } = require("technicalindicators")
 
 1. store every tick if before and after tick makes diff > min MediaKeyStatusMap
@@ -12,5 +14,10 @@ middleware who will also memories the last 5/15/60 min data with rsi also it can
 
 
 
-]
+
+
+
+
+node virtualTrader.js ZlsP16z1powE8DIhT4CGJznScXpmN2iW 11220226 NIFTY2140814800CE  1.1
+node virtualTrader.js FyzhfwCrJLADGqOpOIaVhrxG5LwZTbcl 11204098 NIFTY2140814400PE  1.9
 
