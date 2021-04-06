@@ -70,7 +70,7 @@ async function init() {
                 subject: `URGENT!! SESSION EXPIRED \n ${JSON.stringify(e)}`
             });
         });
-    }, 10*1000);
+    }, 60*1000);
 
     /*try {
 
