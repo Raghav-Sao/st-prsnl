@@ -11,6 +11,8 @@ const defaultTickInterval = 9000;
 let rsi;
 let previousRSI;
 const TARGET = process.argv[5];
+let INSTRUMENT_TOKEN = parseInt(process.argv[3]);
+let CHART_SYMBOL = process.argv[4];
 
 function rsi60({ capital, tickInterval, noNewTradeTime , shutDownTime}, Exchange) {
     noNewTradeTime = noNewTradeTime || defaultNoNewTradeTime;
@@ -92,7 +94,7 @@ function rsi60({ capital, tickInterval, noNewTradeTime , shutDownTime}, Exchange
         const hour = time.hours();
         const minute = time.minutes();
 
-        console.log(`hour - ${hour} minute ${minute}`);
+        console.log(`hour - ${hour} minute ${minute}`, {INSTRUMENT_TOKEN}, {CHART_SYMBOL});
         console.log('candleCount', candleCount);
         console.log('15_min_candle', candle);
         candleCount++; 

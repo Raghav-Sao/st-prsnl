@@ -109,7 +109,7 @@ async function init() {
     let lastTicksGrouped;
     async function onTicks(ticks) {
         // timestamp in ticks is in second, always convert to millisecond for conversion
-        console.log("ticks","---------->");
+        // console.log("ticks","---------->");
         const grouped = _.groupBy(ticks, 'instrument_token');
         // console.log(grouped,subscribedToken )
         // return
