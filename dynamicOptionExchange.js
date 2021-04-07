@@ -273,7 +273,7 @@ const buy = async ({chart, lots}) => {
     };
     console.log('buy')
     console.log(chart, lots);
-    return kcc.placeOrder('regular', {
+    return kc.placeOrder('regular', {
          exchange: 'NFO',
          tradingsymbol: chart.symbol,
          quantity: lots*75,
@@ -295,7 +295,7 @@ const buy = async ({chart, lots}) => {
      console.log('targetPosition', targetPosition);
      const quantity = _.sum(_.map(targetPosition, 'quantity')) || 999999;
      console.log('Total quantity  available', quantity);
-     return kcc.placeOrder('regular', {
+     return kc.placeOrder('regular', {
         exchange: 'NFO',
         tradingsymbol: chart.symbol,
         quantity: Math.min(lots*75, quantity) || 1*75,
