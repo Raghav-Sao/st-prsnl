@@ -61,7 +61,7 @@ async function init() {
         const postions = await kc.getPositions();
         console.log('positions', 'postions');
         const orders = kc.getOrders().then((data) => {
-            //console.log(moment().format(), orders )
+            console.log("session active current time:",moment().format() )
         }).catch((e) => {
             console.log('session expired');
             console.log(e);
@@ -104,15 +104,10 @@ async function init() {
 
     let store = [];
     let tickCount = 0;
-    let callChart = constants.CALL_WEEKLY;
-    let putChart = constants.PUT_WEEKLY;
     let lastTicksGrouped;
     async function onTicks(ticks) {
         // timestamp in ticks is in second, always convert to millisecond for conversion
-        // console.log("ticks","---------->");
         const grouped = _.groupBy(ticks, 'instrument_token');
-        // console.log(grouped,subscribedToken )
-        // return
         subscribedToken.forEach( token  => {
             if (!grouped[token]) {
                 grouped[token] = lastTicksGrouped[token];
@@ -122,54 +117,36 @@ async function init() {
 
         const secondsTimeStamp = moment(ticks[0].timestamp).unix();
         if  (tickCount === 0) {
-            // ignore first tick when not multiple of 15minute
-            // otherwise candle will shift
-            // console.log(ticks,secondsTimeStamp, secondsTimeStamp%INTERVAL);
-
-            // const lastHistoricalCandle = await getHistoricalData({instrumentTokens: subscribedToken, interval: '15minute'});
-            // console.log(lastHistoricalCandle);
+            /* ignore first tick when not multiple of 15minute
+                otherwise candle will shift */
             if (secondsTimeStamp%INTERVAL !== 0) {
                 console.log('ignoring initial ticks at - ', ticks[0].timestamp, secondsTimeStamp, moment((secondsTimeStamp)*1000).utcOffset("+05:30").format());
                 return;
             } else {
-                
                 let toDate = new Date(ticks[0].timestamp);
-
                 toDate.setMinutes(toDate.getMinutes()-1);
                 toDate = new Date(toDate);
                 let fromDate = new Date(ticks[0].timestamp);
                 fromDate = new Date(fromDate.setDate(fromDate.getDate()-30));
                 console.log(moment(toDate).utcOffset("+05:30").format(), "todate");
                 console.log(moment(fromDate).utcOffset("+05:30").format(), "fromDate");
-                // const data = await getHistoricalData2({instrumentTokens: subscribedToken, interval: '15minute', toDate, fromDate}) ??
                 subscribedToken.forEach((instrumentToken) => {
                     getHistoricalData({instrumentToken, interval: '15minute', toDate, fromDate, kc}).then(data => {
                         let lastCandle;
                         data.forEach( candle => {
                             lastCandle = includeRSI(candle, lastCandle);
-                            // console.log(lastCandle.rsi, "----->")
                         })
-                        console.log(lastCandle.rsi, "----->")
+                        console.log("calculated historical RSI", lastCandle.rsi)
                         lastHistoricalCandle = lastCandle;
                     })
-                })
-                
-                
-                //get historical data from last atleasrt 200 candle calculate rsi and add to last candle data;
+                })                
             }
-
-            //get previouscandles 
-            // const lastHistoricalCandle = await getHistoricalData(subscribedToken);
-            // console.log('Candle creation starts', ticks);
         }
-        // console.log(store);
         const raw = subscribedToken.map( token  => {
-            // console.log(grouped, token);
             return _.get(grouped[token], 0) || store[store.length - 1][0];
         })
-        // console.log(raw, "=======>")
-        const timestamp = ticks[0].timestamp;
 
+        const timestamp = ticks[0].timestamp;
         const transformed = _.map(raw, (tick) => {
             return {
                 last_price: tick.last_price,
@@ -198,7 +175,7 @@ async function init() {
             if(diff%10 === 0) {
                 fs.appendFileSync('./tickData.json', JSON.stringify(grouped));
             }
-            // after 15 minutes create and emit candle
+            /* after 15 minutes create and emit candle */
             if (diff >= INTERVAL) {
                 createAndEmitCandle(store);
                 store = [];
@@ -217,14 +194,8 @@ async function init() {
             lastCandle = lastHistoricalCandle;
         }
         const nifty = _.map(data, (item)  => item[0]);
-        // const call = _.map(data, (item)  => item[1]);
-        // const put = _.map(data, (item)  => item[2]);
         const candleData = {
             ...getCandle(nifty),
-            // callCandle: getCandle(call),
-            // putCandle: getCandle(put),
-            // callChart,
-            // putChart,
         };
         
         const candle = utils.includeRSI(candleData, lastCandle);
@@ -233,7 +204,6 @@ async function init() {
             candle.previousClose =  lastCandle.close;
             candle.previousRSI = lastCandle.rsi;
         }   
-        // console.log(candle);
         console.log("emitting----15 min candle--->")
         emitter.emit('15-minute-candle', candle);
         lastCandle = candle;
@@ -246,8 +216,8 @@ async function init() {
             high: Math.max(..._.map(dataArray, 'last_price')),
             low: Math.min(..._.map(dataArray, 'last_price')),
             close: dataArray[dataArray.length - 1].last_price,
-            time: dataArray[0].timestamp*1000, // seconds to milliseconds
-            timeStr: new Date(dataArray[0].time).toLocaleString('en-US', {timeZone: 'Asia/Kolkata'}), // seconds to milliseconds
+            time: dataArray[0].timestamp*1000, /* seconds to milliseconds */
+            timeStr: new Date(dataArray[0].time).toLocaleString('en-US', {timeZone: 'Asia/Kolkata'}),
         } 
     }
 

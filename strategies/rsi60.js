@@ -21,7 +21,7 @@ function rsi60({ capital, tickInterval, noNewTradeTime , shutDownTime}, Exchange
 
     const tickEventName = getEventName(tickInterval);
 
-    // change this value to morning 9:15 candle incase of restart
+    /* change this value to morning 9:15 candle incase of restart */
     let activeTrade = null;
     let stopLoss = null;
     let target = null;
@@ -228,12 +228,6 @@ function rsi60({ capital, tickInterval, noNewTradeTime , shutDownTime}, Exchange
         dayReset
     };
 }
-
-
-
-
-
-
 
 function calculateInvestment(tradeType, candle, capital, deployCapitalPercentage = 100, lotSize = 75) {
     const price = candle.close;
