@@ -4,7 +4,6 @@ const moment = require('moment');
 const _ =  require('lodash');
 // var KiteTicker = require("./KiteVirtual").KiteTicker;
 // const KiteConnect = require("./KiteVirtual").KiteConnect;
-const getHistoricalData = require('./kiteDataManager').getHistoricalData;
 var KiteTicker = require("kiteconnect").KiteTicker;
 const KiteConnect = require("kiteconnect").KiteConnect;
 const constants = require('./constants');
@@ -37,7 +36,25 @@ kc.generateSession(REQUEST_TOKEN, constants.API_SECRET)
 	.catch(function(err) {
 		console.log(err);
     });
-    
+
+    async function getHistoricalData({ instrumentToken, interval, fromDate, toDate}) {
+        return new Promise(async (resolve, reject) => {
+            console.log("getHistoricalData", { instrumentToken, interval, fromDate, toDate})
+            try {
+                const fSTR = moment(fromDate).utcOffset("+05:30").format("YYYY-MM-DD HH:mm:SS");
+                const tSTR = moment(toDate).utcOffset("+05:30").format("YYYY-MM-DD HH:mm:SS");
+                console.log(fSTR, tSTR);
+                const res = await kc.getHistoricalData(instrumentToken, interval, fSTR,  tSTR);
+                resolve(res);
+            } catch(error) {
+                reject([])
+                console.log(error,"error......");
+            }
+        })
+        .catch(function(err) {
+            console.log({err});
+        });
+    }
 
 const getInstruments = async(niftyStrike) => {
     const {callStrike, putStrike} = utils.getNearestITMOptionStrike(niftyStrike);
@@ -131,7 +148,7 @@ async function init() {
                 console.log(moment(toDate).utcOffset("+05:30").format(), "todate");
                 console.log(moment(fromDate).utcOffset("+05:30").format(), "fromDate");
                 subscribedToken.forEach((instrumentToken) => {
-                    getHistoricalData({instrumentToken, interval: '15minute', toDate, fromDate, kc}).then(data => {
+                    getHistoricalData({ instrumentToken, interval: '15minute', toDate, fromDate }).then(data => {
                         let lastCandle;
                         data.forEach( candle => {
                             lastCandle = includeRSI(candle, lastCandle);
@@ -243,6 +260,7 @@ const buy = async ({chart, lots}) => {
     };
     console.log('buy')
     console.log(chart, lots);
+    return
     return kc.placeOrder('regular', {
          exchange: 'NFO',
          tradingsymbol: chart.symbol,
@@ -259,6 +277,7 @@ const buy = async ({chart, lots}) => {
     };
      console.log('sell')
      console.log(chart, lots);
+     return
      const positions = await kc.getPositions();
      console.log('positions', positions);
      const targetPosition = _.filter(_.get(positions, 'net'), (pos) => pos.tradingsymbol === chart.symbol);
@@ -279,4 +298,5 @@ module.exports = {
     emitter,
     buy,
     sell,
+    getHistoricalData
 }

@@ -21,3 +21,4 @@ middleware who will also memories the last 5/15/60 min data with rsi also it can
 node virtualTrader.js ZlsP16z1powE8DIhT4CGJznScXpmN2iW 11220226 NIFTY2140814800CE  1.1
 node virtualTrader.js FyzhfwCrJLADGqOpOIaVhrxG5LwZTbcl 11204098 NIFTY2140814400PE  1.9
 
+ ssh -i "aws-st-rsi60.pem" ubuntu@ec2-13-126-166-17.ap-south-1.compute.amazonaws.com
