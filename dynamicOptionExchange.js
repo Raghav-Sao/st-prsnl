@@ -260,7 +260,6 @@ const buy = async ({chart, lots}) => {
     };
     console.log('buy')
     console.log(chart, lots);
-    return
     return kc.placeOrder('regular', {
          exchange: 'NFO',
          tradingsymbol: chart.symbol,
@@ -277,7 +276,6 @@ const buy = async ({chart, lots}) => {
     };
      console.log('sell')
      console.log(chart, lots);
-     return
      const positions = await kc.getPositions();
      console.log('positions', positions);
      const targetPosition = _.filter(_.get(positions, 'net'), (pos) => pos.tradingsymbol === chart.symbol);
