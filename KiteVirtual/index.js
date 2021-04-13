@@ -1,22 +1,37 @@
 const constants = require('../constants');
+const moment = require('moment');
 const fs = require('fs');
 const path = require('path');
+const REQUEST_TOKEN = process.argv[2];
+let isSubscribed = false;
+
+const RealKiteConnect = require("kiteconnect").KiteConnect;
+const kc = new RealKiteConnect({
+	api_key: constants.API_KEY
+});
+
+kc.generateSession(REQUEST_TOKEN, constants.API_SECRET)
+	.then(function(response) {
+        ACCESS_TOKEN = response.access_token;
+        PUBLIC_TOKEN = response.public_token;
+        console.log("response generateSession ------->", response);
+        
+	})
+	.catch(function(err) {
+		console.log(err);
+    });
+
+
+
 const INSTRUMENT_TOKEN = parseInt(process.argv[3]);
-const mapedToken ={
-    "NIFTY21APR14700CE": 17060610,
-    "NIFTY21APR14900PE": 17063938,
-    "NIFTY2140814700CE": 11217666
+const mapedToken = {
+    "NIFTY2141514800PE": 13663234
 }
-const rawdata17060610 = fs.readFileSync(path.join(__dirname, './data/nifty18-02apr-15min.json')); 
-const rawdata17063938 = fs.readFileSync(path.join(__dirname,'./data/14900pe-18-02apr-15min.json')); 
-const rawdata256265 = fs.readFileSync(path.join(__dirname,'./data/historicalData.json'));
-const rawdata11217666 = fs.readFileSync(path.join(__dirname,'./data/CEhistoricalData.json'));
+
+const rawdata13663234 = fs.readFileSync(path.join(__dirname,'./data/historicalData.json'));
 
 
-const _17060610 = JSON.parse(rawdata17060610);
-const _17063938 = JSON.parse(rawdata17063938);
-const _256265 = JSON.parse(rawdata256265);
-const _11217666 = JSON.parse(rawdata11217666);
+const _13663234 = JSON.parse(rawdata13663234);
 
 
 function KiteConnect() {
@@ -84,6 +99,10 @@ function KiteConnect() {
         return promise
     };
 
+    this.getHistoricalData = (instrumentToken, interval, fSTR,  tSTR) => {
+        return kc.getHistoricalData(instrumentToken, interval, fSTR,  tSTR);
+    }
+
     this.placeOrder = (type) => {
 
     }
@@ -93,7 +112,7 @@ function KiteConnect() {
 
 function KiteTicker() {
     this.subscribedToken = [];
-    this.tickerCount = 0;
+    this.tickerCount = 180;
     this.autoReconnect = () => {
 
     }
@@ -102,8 +121,19 @@ function KiteTicker() {
         
     }
 
-    makeTickerData = (candle, instrument_token) => {
+    makeTickerData = (candleData, instrument_token) => {
         return ["open", "high", "low", "close"].map((type, index) => {
+            let candle = {};
+            if(Array.isArray(candleData)) {
+                candle.date = candleData[0];
+                candle.open = candleData[1];
+                candle.high = candleData[2];
+                candle.low = candleData[3];
+                candle.close = candleData[4];
+            } else {
+                candle = candleData
+            }
+            // console.log(candle, candleData)
             const dt = new Date(candle.date);
         
             dt.setMinutes(dt.getMinutes()+index*(4));
@@ -112,7 +142,8 @@ function KiteTicker() {
                 mode: 'full',
                 instrument_token,
                 last_price: candle[type],
-                timestamp: dt.toISOString()
+                timestamp: dt.toISOString(),
+                type,
         
             }
         return tick;
@@ -125,7 +156,7 @@ function KiteTicker() {
         
         this.interval = setInterval(() => {
             console.log(this.tickerCount)
-            if(this.tickerCount >=10) {
+            if(this.tickerCount >= 205) {
                 clearInterval(this.interval);
                 return
             }
@@ -134,7 +165,6 @@ function KiteTicker() {
             const ticks = subscribedToken.map((token) => {
                 const data = eval('_'+token);
                 const currentData = data[this.tickerCount++];
-                console.log("here")
                 const ticker = makeTickerData(currentData, token);
                 let i = 0;
                 const tickerInterval = setInterval(() => {
@@ -143,7 +173,7 @@ function KiteTicker() {
                     if(i === ticker.length) {
                         clearInterval(tickerInterval);
                     }
-                }, 1000)
+                }, 500)
                 // ticker.forEach(tick => {
                 //     console.log("ticker")
                 //     // callBack([tick])
@@ -152,7 +182,7 @@ function KiteTicker() {
             })
 
             
-        }, 10000);
+        }, 5000);
     }
 
     this.on = (type, callBack) => {
@@ -188,18 +218,6 @@ function KiteTicker() {
     }
 
 }
-// x = new KiteConnect();
-// // x.getInstruments().then(data => console.log(data));
-
-
-// ticker = new KiteTicker();
-// ticker.subscribe(["abc", "def"]);
-// ticker.on("ticks", handleTick);
-// function handleTick(tick) {
-//     console.log({tick});
-// }
-// setTimeout(() => ticker.unsubscribe(["abc"]), 5000);
-
 
 module.exports = {
     KiteConnect,

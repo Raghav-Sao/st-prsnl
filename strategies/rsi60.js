@@ -11,17 +11,18 @@ const defaultTickInterval = 9000;
 let rsi;
 let previousRSI;
 const TARGET = process.argv[5];
+let triggerPrice = null;
 let INSTRUMENT_TOKEN = parseInt(process.argv[3]);
 let CHART_SYMBOL = process.argv[4];
 
-function rsi60({ capital, tickInterval, noNewTradeTime , shutDownTime}, Exchange) {
+function rsi60({ capital, tickInterval, noNewTradeTime , shutDownTime}, Exchange, getHistoricalData) {
     noNewTradeTime = noNewTradeTime || defaultNoNewTradeTime;
     shutDownTime = shutDownTime || defaultShutDownTime;
     tickInterval = tickInterval || defaultTickInterval;
 
     const tickEventName = getEventName(tickInterval);
 
-    // change this value to morning 9:15 candle incase of restart
+    /* change this value to morning 9:15 candle incase of restart */
     let activeTrade = null;
     let stopLoss = null;
     let target = null;
@@ -46,6 +47,28 @@ function rsi60({ capital, tickInterval, noNewTradeTime , shutDownTime}, Exchange
         console.log("targetCondition", candle.close, target)
 
         return candle.close >= target;
+    }
+
+    const reCalculateTarget = (candle) => {
+        let toDate = new Date(candle.time);
+        toDate.setMinutes(toDate.getMinutes()+14);
+        toDate = new Date(toDate);
+        let fromDate = new Date(candle.time);
+        fromDate = new Date(fromDate.setDate(fromDate.getDate()-130));
+        getHistoricalData({instrumentToken: 256265, interval: '60minute', toDate, fromDate}).then(data=> {
+            let lastCandle;
+            data.forEach( (candle, index )=> {
+                lastCandle = utils.includeRSI(candle, lastCandle);
+                if(data.length - 2 === index) {
+                    console.log("calculated historical RSI, -------------->", lastCandle.rsi, new Date(candle.date))
+                }
+            })
+            console.log("calculated current RSI, -------------->", lastCandle.rsi, moment(lastCandle.date).utcOffset("+05:30").format())
+            if(rsi > 60) {
+                target = triggerPrice * 1.8;
+                console.log("target reset to ---->", target);
+            }
+        })
     }
 
     const handleEachTick = tick => {
@@ -141,7 +164,9 @@ function rsi60({ capital, tickInterval, noNewTradeTime , shutDownTime}, Exchange
                 
                 stopLoss = candle.low;
                 target = candle.close * (TARGET && parseFloat(TARGET) || 1.1); //taget
-                console.log("starting trade with sl and target is" + stopLoss + "->" + target);
+                triggerPrice = candle.close;
+                reCalculateTarget(candle);
+                console.log("starting trade with sl is" + stopLoss + "and target is" + target);
                 const investment = calculateInvestment(activeTrade, candle, capital);
                 totalLots = investment.lots;
                 emitter.emit('startTrade', {
@@ -182,6 +207,7 @@ function rsi60({ capital, tickInterval, noNewTradeTime , shutDownTime}, Exchange
         activeTrade = null;
         stopLoss = null;
         target = null;
+        triggerPrice = null;
         Exchange.removeListener("tick-candle", handleEachTick);
     }
 
@@ -228,12 +254,6 @@ function rsi60({ capital, tickInterval, noNewTradeTime , shutDownTime}, Exchange
         dayReset
     };
 }
-
-
-
-
-
-
 
 function calculateInvestment(tradeType, candle, capital, deployCapitalPercentage = 100, lotSize = 75) {
     const price = candle.close;

@@ -6,7 +6,7 @@ const todaysCapital = 5000000;
 function trader(strategy) {
     const currentStrategyTrader =  strategy({
         capital: todaysCapital,
-    }, Exchange.emitter);
+    }, Exchange.emitter, Exchange.getHistoricalData);
     let startPrice = 0;
     let profit = 0;
     let dayProfit = 0;
