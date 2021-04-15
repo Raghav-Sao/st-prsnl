@@ -64,11 +64,11 @@ function rsi60({ capital, tickInterval, noNewTradeTime , shutDownTime}, Exchange
                 }
             })
             console.log("calculated current RSI, -------------->", lastCandle.rsi, moment(lastCandle.date).utcOffset("+05:30").format())
-            if(rsi > 60 && CHART_SYMBOL.includes('CE')) {
+            if(lastCandle.rsi > 60 && CHART_SYMBOL.includes('CE')) {
                 target = triggerPrice * 1.8;
                 console.log("target reset to ---->", target);
             }
-            if(rsi < 40 && CHART_SYMBOL.includes('PE')) {
+            if(lastCandle.rsi < 40 && CHART_SYMBOL.includes('PE')) {
                 target = triggerPrice * 1.8;
                 console.log("target reset to ---->", target);
             }
