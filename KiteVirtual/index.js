@@ -2,6 +2,7 @@ const constants = require('../constants');
 const moment = require('moment');
 const fs = require('fs');
 const path = require('path');
+const { forEach } = require('lodash');
 const REQUEST_TOKEN = process.argv[2];
 let isSubscribed = false;
 
@@ -28,10 +29,11 @@ const mapedToken = {
     "NIFTY2141514800PE": 13663234
 }
 
-const rawdata13663234 = fs.readFileSync(path.join(__dirname,'./data/historicalData.json'));
+const rawdata = fs.readFileSync(path.join(__dirname,'./data/multiData.json'));
+// const rawdata13663234 = fs.readFileSync(path.join(__dirname,'./data/historicalData.json'));
 
 
-const _13663234 = JSON.parse(rawdata13663234);
+const candleData = JSON.parse(rawdata);
 
 
 function KiteConnect() {
@@ -112,7 +114,7 @@ function KiteConnect() {
 
 function KiteTicker() {
     this.subscribedToken = [];
-    this.tickerCount = 180;
+    this.tickerCount = 225-75;
     this.autoReconnect = () => {
 
     }
@@ -121,32 +123,38 @@ function KiteTicker() {
         
     }
 
-    makeTickerData = (candleData, instrument_token) => {
+    makeTickerData = (candleCollection) => {
         return ["open", "high", "low", "close"].map((type, index) => {
-            let candle = {};
-            if(Array.isArray(candleData)) {
-                candle.date = candleData[0];
-                candle.open = candleData[1];
-                candle.high = candleData[2];
-                candle.low = candleData[3];
-                candle.close = candleData[4];
-            } else {
-                candle = candleData
-            }
-            // console.log(candle, candleData)
-            const dt = new Date(candle.date);
-        
-            dt.setMinutes(dt.getMinutes()+index*(4));
-            const tick = {
-                tradable: true,
-                mode: 'full',
-                instrument_token,
-                last_price: candle[type],
-                timestamp: dt.toISOString(),
-                type,
-        
-            }
-        return tick;
+            const candleCollectionKey = Object.keys(candleCollection);
+            return candleCollectionKey.map((candleDataKey) => {
+                const candleData = candleCollection[candleDataKey];
+                let candle = {};
+                if(Array.isArray(candleData)) {
+                    candle.date = candleData[0];
+                    candle.open = candleData[1];
+                    candle.high = candleData[2];
+                    candle.low = candleData[3];
+                    candle.close = candleData[4];
+                    // candle.instrument_token = candleData[5];
+                } else {
+                    candle = candleData
+                }
+                // console.log("candle", candleData)
+                const dt = new Date(candle.date || candle.time);
+            
+                dt.setMinutes(dt.getMinutes()+index);
+                const tick = {
+                    tradable: true,
+                    mode: 'full',
+                    instrument_token: candle.instrumentToken,
+                    last_price: candle[type],
+                    timestamp: dt.toISOString(),
+                    type,
+                    symbol: candle.symbol
+            
+                }
+                return tick;
+            })
         
         
         })
@@ -155,35 +163,67 @@ function KiteTicker() {
     handleOnTicks =(callBack) => {
         
         this.interval = setInterval(() => {
-            console.log(this.tickerCount)
-            if(this.tickerCount >= 205) {
+            // console.log(this.tickerCount)
+            if(this.tickerCount >= 225) {
                 clearInterval(this.interval);
                 return
             }
-            const subscribedToken = this.subscribedToken;
             
-            const ticks = subscribedToken.map((token) => {
-                const data = eval('_'+token);
-                const currentData = data[this.tickerCount++];
-                const ticker = makeTickerData(currentData, token);
+            
+            const candles = candleData[this.tickerCount++]
+                           
+                const ticker = makeTickerData(candles, "token");
                 let i = 0;
                 const tickerInterval = setInterval(() => {
-                    callBack([ticker[i]]);
+                    callBack(ticker[i]);
                     i++;
                     if(i === ticker.length) {
                         clearInterval(tickerInterval);
                     }
-                }, 500)
+                }, 300)
                 // ticker.forEach(tick => {
                 //     console.log("ticker")
                 //     // callBack([tick])
                 //     setTimeout(() => callBack([tick]), 1500);
                 // })
-            })
+        
 
             
-        }, 5000);
+        }, 3000);
     }
+
+    // handleOnTicks =(callBack) => {
+        
+    //     this.interval = setInterval(() => {
+    //         console.log(this.tickerCount)
+    //         if(this.tickerCount >= 205) {
+    //             clearInterval(this.interval);
+    //             return
+    //         }
+    //         const subscribedToken = this.subscribedToken;
+            
+    //         const ticks = subscribedToken.map((token) => {
+    //             const data = eval('_'+token);
+    //             const currentData = data[this.tickerCount++];               
+    //             const ticker = makeTickerData(currentData, token);
+    //             let i = 0;
+    //             const tickerInterval = setInterval(() => {
+    //                 callBack([ticker[i]]);
+    //                 i++;
+    //                 if(i === ticker.length) {
+    //                     clearInterval(tickerInterval);
+    //                 }
+    //             }, 500)
+    //             // ticker.forEach(tick => {
+    //             //     console.log("ticker")
+    //             //     // callBack([tick])
+    //             //     setTimeout(() => callBack([tick]), 1500);
+    //             // })
+    //         })
+
+            
+    //     }, 5000);
+    // }
 
     this.on = (type, callBack) => {
     

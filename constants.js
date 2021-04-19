@@ -1,9 +1,9 @@
 const charts = {
     'NIFTY19D1912100CE': 11298050,
     'NIFTY19D1912000PE': 11296770,
-    'NIFTY': 11204098,
-    // 'NIFTY': 256265,
-    // 'NIFTY': 58108679,
+    // 'NIFTY': 11204098,
+    'NIFTY': 256265,
+    // 'NIFTY': 58246663,
 };
 
 module.exports = {
@@ -13,7 +13,7 @@ module.exports = {
     CALL_WEEKLY: { chartId: 9907714, symbol: "NIFTY19D1912250CE" },
     PUT_WEEKLY: { chartId: 9907970, symbol: "NIFTY19D1912150PE" },
     NIFTY: charts.NIFTY,
-    EXPIRY: "NIFTY21408",
+    EXPIRY: "NIFTY21422",
     chartByStrike: {
         call: {
             11800: {

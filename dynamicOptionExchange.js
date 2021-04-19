@@ -9,8 +9,8 @@ const KiteConnect = require("kiteconnect").KiteConnect;
 const constants = require('./constants');
 const utils = require('./utils');
 const fs = require('fs');
-const { includeRSI } = require('./utils');
-const INTERVAL = 900;
+const { includeRSI, getNearestITMOptionStrike } = require('./utils');
+const INTERVAL = 60*5;
 let ACCESS_TOKEN;
 let PUBLIC_TOKEN;
 let REQUEST_TOKEN = process.argv[2];
@@ -19,11 +19,14 @@ let CHART_SYMBOL = process.argv[4];
 
 let lastHistoricalCandle = [];
 const EXPIRY = constants.EXPIRY;
-let subscribedToken = [];
+let subscribedToken = [256265];
 let instrument_tokens = {};
 const kc = new KiteConnect({
 	api_key: constants.API_KEY
 });
+
+let startTime;
+const symbolMapping = {256265: "NIFTY"}
 
 kc.generateSession(REQUEST_TOKEN, constants.API_SECRET)
 	.then(function(response) {
@@ -47,7 +50,7 @@ kc.generateSession(REQUEST_TOKEN, constants.API_SECRET)
                 const res = await kc.getHistoricalData(instrumentToken, interval, fSTR,  tSTR);
                 resolve(res);
             } catch(error) {
-                reject([])
+                resolve([])
                 console.log(error,"error......");
             }
         })
@@ -56,27 +59,50 @@ kc.generateSession(REQUEST_TOKEN, constants.API_SECRET)
         });
     }
 
-const getInstruments = async(niftyStrike) => {
-    const {callStrike, putStrike} = utils.getNearestITMOptionStrike(niftyStrike);
-    const tradingsymbols = [`${EXPIRY}${callStrike}CE`, `${EXPIRY}${putStrike}PE`] 
-    console.log({callStrike, putStrike, niftyStrike});
-    const callTradingsymbol = 'callStrike'
-    const struments = await kc.getInstruments(['FNO'])
-    const filteredData = struments.filter(data => {
-        return tradingsymbols.includes(data.tradingsymbol)
-    });
-    instrument_tokens = {};
-    // filteredData.forEach(data => {
-    //     instrument_tokens[data.tradingsymbol] = data.instrument_token;
-    // });
-    console.log({instrument_tokens});
-    return instrument_tokens;
+    const getInstruments = async(niftyStrike) => {
+        const strikes = utils.getOptionStrikes(niftyStrike);
+        const tradingsymbols = []; 
+        strikes.forEach(strike => {
+            tradingsymbols.push(`${EXPIRY}${strike}CE`, `${EXPIRY}${strike}PE`);
+        })
+        
+        const struments = await kc.getInstruments()
+        const filteredData = struments.filter(data => {
+            return tradingsymbols.includes(data.tradingsymbol)
+        });
+    
+        instrumentTokens = {};
+        filteredData.forEach(data => {
+            instrumentTokens[data.tradingsymbol] = data.instrument_token;
+            subscribedToken.push(parseInt(data.instrument_token));
+            symbolMapping[data.instrument_token] = data.tradingsymbol;
+        });
+        console.log({instrumentTokens});
+        return instrumentTokens;
+    }
+
+const collectHistoricalData = (toDate, fromDate, ) => {
+    for(let i = 0; i< subscribedToken.length; i++ ) {
+        const instrumentToken = subscribedToken[i];
+        getHistoricalData({ instrumentToken, interval: '5minute', toDate, fromDate }).then(data => {
+            let lastCandle;
+            data.forEach( candle => {
+                lastCandle = includeRSI(candle, lastCandle);
+            })
+            const symbol = symbolMapping[instrumentToken];
+            lastHistoricalCandle[symbol] = lastCandle;
+            console.log(lastCandle, symbol)
+            
+        })
+        utils.sleep();
+    }
 }
+
 
 async function init() {   
     setInterval(async () => {
         const postions = await kc.getPositions();
-        console.log('positions', 'postions');
+        // console.log('positions', 'postions');
         const orders = kc.getOrders().then((data) => {
             console.log("session active current time:",moment().format() )
         }).catch((e) => {
@@ -87,17 +113,17 @@ async function init() {
                 subject: `URGENT!! SESSION EXPIRED \n ${JSON.stringify(e)}`
             });
         });
-    }, 60*1000);
+    }, 15*60*1000);
 
-    /*try {
+    try {
 
         const data = await kc.getLTP([constants.NIFTY]);
-        const niftyStrike = data[constants.NIFTY].last_price;
-        await getInstruments(niftyStrike);
+        const  niftyStrike = data[constants.NIFTY].last_price;
+        const instrument = await getInstruments(niftyStrike );
     }
     catch(error) {
         console.log({error});
-    }*/
+    }
 
     
     const ticker = new KiteTicker({
@@ -126,7 +152,7 @@ async function init() {
         // timestamp in ticks is in second, always convert to millisecond for conversion
         const grouped = _.groupBy(ticks, 'instrument_token');
         subscribedToken.forEach( token  => {
-            if (!grouped[token]) {
+            if (!grouped[token] && lastTicksGrouped) {
                 grouped[token] = lastTicksGrouped[token];
             }
         })
@@ -144,19 +170,10 @@ async function init() {
                 toDate.setMinutes(toDate.getMinutes()-1);
                 toDate = new Date(toDate);
                 let fromDate = new Date(ticks[0].timestamp);
-                fromDate = new Date(fromDate.setDate(fromDate.getDate()-30));
+                fromDate = new Date(fromDate.setDate(fromDate.getDate()-20));
                 console.log(moment(toDate).utcOffset("+05:30").format(), "todate");
                 console.log(moment(fromDate).utcOffset("+05:30").format(), "fromDate");
-                subscribedToken.forEach((instrumentToken) => {
-                    getHistoricalData({ instrumentToken, interval: '15minute', toDate, fromDate }).then(data => {
-                        let lastCandle;
-                        data.forEach( candle => {
-                            lastCandle = includeRSI(candle, lastCandle);
-                        })
-                        console.log("calculated historical RSI", lastCandle.rsi)
-                        lastHistoricalCandle = lastCandle;
-                    })
-                })                
+                collectHistoricalData(toDate, fromDate);      
             }
         }
         const raw = subscribedToken.map( token  => {
@@ -164,19 +181,24 @@ async function init() {
         })
 
         const timestamp = ticks[0].timestamp;
+        const mappedTransform = {};
         const transformed = _.map(raw, (tick) => {
-            return {
+            const transformedTick = {
                 last_price: tick.last_price,
                 timestamp: moment(timestamp).unix(),
                 time: timestamp,
+                instrumentToken: tick.instrument_token,
+                symbol: symbolMapping[tick.instrument_token],
             }
+            mappedTransform[symbolMapping[tick.instrument_token]] = transformedTick;
+            return transformedTick;
         });
 
         if (tickCount === 0) {
             tickCount++;
-            const {callStrike, putStrike} = utils.getNearestITMOptionStrike(transformed[0].last_price);
-            const callTradingsymbols = `${EXPIRY}${callStrike}CE`;
-            const putTradingsymbols =  `${EXPIRY}${putStrike}PE`;
+            // const {callStrike, putStrike} = utils.getNearestITMOptionStrike(transformed[0].last_price);
+            // const callTradingsymbols = `${EXPIRY}${callStrike}CE`;
+            // const putTradingsymbols =  `${EXPIRY}${putStrike}PE`;
             // if(!subscribedToken[callTradingsymbols] || !subscribedToken[putTradingsymbols]) {
             //     ticker.unsubscribe(subscribedToken);
             //     console.log({oldSubscribedTocken: subscribedToken})
@@ -189,15 +211,16 @@ async function init() {
         if (store.length) {
             const firstTimeStamp = store[0][0].timestamp;
             const diff = transformed[0].timestamp - firstTimeStamp;
-            if(diff%10 === 0) {
+            /*if(diff%10 === 0) {
                 fs.appendFileSync('./tickData.json', JSON.stringify(grouped));
-            }
-            /* after 15 minutes create and emit candle */
+            }*/
+            /* after 5 minutes create and emit candle */
             if (diff >= INTERVAL) {
+                
                 createAndEmitCandle(store);
                 store = [];
             } else {
-                emitter.emit('tick-candle', transformed);
+                emitter.emit('tick-candle', mappedTransform);
             }
         }
         
@@ -210,20 +233,39 @@ async function init() {
         if(!lastCandle && lastHistoricalCandle) {
             lastCandle = lastHistoricalCandle;
         }
-        const nifty = _.map(data, (item)  => item[0]);
+        const tickData = {};
+        const nifty = _.forEach(data, (item)  => {
+            _.forEach(item, (tickInfo) => {
+                if(tickData[tickInfo.symbol]) {
+                    tickData[tickInfo.symbol].push(tickInfo);
+                } else {
+                    tickData[tickInfo.symbol] = [tickInfo]
+                }
+            })
+        });
         const candleData = {
-            ...getCandle(nifty),
+            
         };
-        
-        const candle = utils.includeRSI(candleData, lastCandle);
+        for(const symbol in tickData) {
+            const prevCandle = lastHistoricalCandle[symbol];
+            const candle = getCandle(tickData[symbol]);
+            const candleWithRSI = utils.includeRSI(candle, prevCandle);
+            if(prevCandle) {
+                candleWithRSI.previousClose =  prevCandle.close;
+                candleWithRSI.previousRSI = prevCandle.rsi;
+            }
+            candleData[symbol] = candleWithRSI;
+        }
+        const candle = candleData;
 
-        if(lastCandle) {
-            candle.previousClose =  lastCandle.close;
-            candle.previousRSI = lastCandle.rsi;
-        }   
-        console.log("emitting----15 min candle--->")
-        emitter.emit('15-minute-candle', candle);
+        
+        const niftyStrike = candle['NIFTY'].close;
+        const {callStrike, putStrike} = getNearestITMOptionStrike(niftyStrike);
+        const callSymbol = `${EXPIRY}${callStrike}CE`;
+        const putSymbol = `${EXPIRY}${putStrike}PE`;
+        emitter.emit('5-minute-candle', {candle, callSymbol, putSymbol});
         lastCandle = candle;
+        lastHistoricalCandle = candle;
 
     }
 
@@ -235,13 +277,13 @@ async function init() {
             close: dataArray[dataArray.length - 1].last_price,
             time: dataArray[0].timestamp*1000, /* seconds to milliseconds */
             timeStr: new Date(dataArray[0].time).toLocaleString('en-US', {timeZone: 'Asia/Kolkata'}),
+            symbol: dataArray[0].symbol,
+            instrumentToken: dataArray[0].instrumentToken,
         } 
     }
 
-
-
     function subscribe() {
-        subscribedToken = [INSTRUMENT_TOKEN];
+        // subscribedToken = [9891586, 9890818]
         // for (const key in instrument_tokens) {
         //     console.log(key, "key");
         //     subscribedToken.push(parseInt(instrument_tokens[key]))
@@ -258,7 +300,7 @@ const buy = async ({chart, lots}) => {
     chart = {
         symbol: CHART_SYMBOL,
     };
-    console.log('buy')
+    console.log('exc buy')
     console.log(chart, lots);
     return kc.placeOrder('regular', {
          exchange: 'NFO',
@@ -274,7 +316,7 @@ const buy = async ({chart, lots}) => {
     chart = {
         symbol: CHART_SYMBOL,
     };
-     console.log('sell')
+     console.log('exc sell')
      console.log(chart, lots);
      const positions = await kc.getPositions();
      console.log('positions', positions);

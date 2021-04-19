@@ -7,13 +7,14 @@ const utils = require('../utils');
 const MAX_NUMBER = 200000;
 const defaultNoNewTradeTime = {minute: 45, hour: 14};
 const defaultShutDownTime = {minute: 10, hour: 15};
-const defaultTickInterval = 9000;
+const defaultTickInterval = 60;
 let rsi;
 let previousRSI;
 const TARGET = process.argv[5];
 let triggerPrice = null;
 let INSTRUMENT_TOKEN = parseInt(process.argv[3]);
 let CHART_SYMBOL = process.argv[4];
+let lastWinnigTime = null;
 
 function rsi60({ capital, tickInterval, noNewTradeTime , shutDownTime}, Exchange, getHistoricalData) {
     noNewTradeTime = noNewTradeTime || defaultNoNewTradeTime;
@@ -32,20 +33,34 @@ function rsi60({ capital, tickInterval, noNewTradeTime , shutDownTime}, Exchange
     let candleCount = 0;
 
 
-    const tradeStartCondition = (candle) => {
+    const tradeStartCondition = (candleData, callSymbol, putSymbol) => {
+        let candle = candleData[callSymbol];
+        // console.log(candle.close , candle.low, candle.close - candle.low)
+        if(!candle || (candle.close - candle.low) > 20) {
+            return null;
+        }
         if (candle.rsi > 60 && candle.previousRSI < 60 ) {
-            return 'BUY';
+            const diff = lastWinnigTime && new Date() - new Date(lastWinnigTime);
+            if(diff && diff < (1000 * 60 * 15)) {
+                return null;
+            }
+            return callSymbol;
+        }
+        candle = candleData[putSymbol];
+        if (candle.rsi > 60 && candle.previousRSI < 60 ) {
+            const diff = lastWinnigTime && new Date() - new Date(lastWinnigTime);
+            if(diff && diff < (1000 * 60 * 15)) {
+                return null;
+            }
+            return putSymbol;
         }
     };
 
     const stopLossCondition = (candle, stopLoss) => {
-        console.log("stopLossCondition", candle.close, stopLoss)
         return candle.close <= stopLoss
     }
 
     const targetCondition = (candle, target) => {
-        console.log("targetCondition", candle.close, target)
-
         return candle.close >= target;
     }
 
@@ -75,10 +90,9 @@ function rsi60({ capital, tickInterval, noNewTradeTime , shutDownTime}, Exchange
         })
     }
 
-    const handleEachTick = tick => {
-        console.log(tick, "handleEachTick");
-        const lastPrice = tick && tick[0] && tick[0].last_price;
-        console.log(tick, "handleEachTick", lastPrice);
+    const handleEachTick = tickData => {
+        const tick = tickData[activeTrade];
+        const lastPrice = tick && tick.last_price;
         if(!lastPrice) {
             return;
         }
@@ -86,7 +100,7 @@ function rsi60({ capital, tickInterval, noNewTradeTime , shutDownTime}, Exchange
             close: lastPrice
         }
         if (stopLossCondition(candle, stopLoss)) {
-            console.log({stopLoss}, "achived")
+            console.log("****************stopLoss triggered************************\n\n")
             emitter.emit("endTrade", {
                 candle,
                 tradeType: activeTrade,
@@ -96,10 +110,12 @@ function rsi60({ capital, tickInterval, noNewTradeTime , shutDownTime}, Exchange
                 // rsi: candle.rsi,
                 // previousRSI: candle.previousRSI,
             });
+            
             return;
         }
         if(targetCondition(candle, target)) {
-            console.log({target}, "achived")
+            console.log("###################### target achived ######################\n\n")
+            lastWinnigTime = tick.last_trade_time;
             emitter.emit("endTrade", {
                 candle,
                 tradeType: activeTrade,
@@ -115,19 +131,24 @@ function rsi60({ capital, tickInterval, noNewTradeTime , shutDownTime}, Exchange
         
     }
 
-    const handler = (candle) => {
-        currentCandle = candle;
-        const time = moment(candle.time).utcOffset("+05:30");
+    const handler = (candleData) => {
+        const {candle: allCandle, callSymbol, putSymbol} =candleData;
+        const currCECandle = allCandle[callSymbol]; 
+        const currPECandle = allCandle[putSymbol]; 
+        console.log({callSymbol, putSymbol, CERsi: currCECandle.rsi, CEPrevRsi: currCECandle.previousRSI,  PERsi: currPECandle.rsi, PEPrevRsi: currPECandle.previousRSI })
+        currentCandle = allCandle[activeTrade] || null;
+        const niftyCandle = allCandle["NIFTY"]
+        const time = moment(niftyCandle.time).utcOffset("+05:30");
         const hour = time.hours();
         const minute = time.minutes();
 
-        console.log(`hour - ${hour} minute ${minute}`, {INSTRUMENT_TOKEN}, {CHART_SYMBOL});
-        console.log('candleCount', candleCount);
-        console.log('15_min_candle', candle);
+        // console.log(`hour - ${hour} minute ${minute}`, {activeTrade});
         candleCount++; 
 
         if (isShutDownTime({hour, minute}, shutDownTime)) {
             if (activeTrade) {
+                const candle = allCandle[activeTrade];
+                debugger
                 emitter.emit("endTrade", {
                     candle,
                     tradeType: activeTrade,
@@ -145,7 +166,8 @@ function rsi60({ capital, tickInterval, noNewTradeTime , shutDownTime}, Exchange
             return;           
         }
 
-        if (hour === 9 && minute === 15) {
+        if (false && hour === 9 && minute === 15) {
+            const candle = allCandle[activeTrade];
             rsi = candle.rsi;
             previousRSI = candle.previousRSI;
             const saveData =  {
@@ -161,16 +183,17 @@ function rsi60({ capital, tickInterval, noNewTradeTime , shutDownTime}, Exchange
 
         } 
         if (!activeTrade && !isNoNewTradeTime({hour, minute}, noNewTradeTime)) {
-            console.log("checking..............>")
-            activeTrade = tradeStartCondition(candle);
-
+            activeTrade = tradeStartCondition(allCandle, callSymbol, putSymbol);
+            
             if (activeTrade) {
+                const candle = allCandle[activeTrade]
                 
-                stopLoss = candle.low;
-                target = candle.close * (TARGET && parseFloat(TARGET) || 1.1); //taget
+                stopLoss = Math.max(candle.low, candle.close-20);
+                target = candle.close * (TARGET && parseFloat(TARGET) || 1.05); //taget
                 triggerPrice = candle.close;
-                reCalculateTarget(candle);
-                console.log("starting trade with sl is" + stopLoss + "and target is" + target);
+                // reCalculateTarget(candle);
+                console.log(`\n\n\n\n hour - ${hour} minute ${minute}`, {activeTrade});
+                console.log(allCandle["NIFTY"].rsi, "-------------starting trade with sl is" + stopLoss + "and target is" + target + "entry was :" +  candle.close + "--------------");
                 const investment = calculateInvestment(activeTrade, candle, capital);
                 totalLots = investment.lots;
                 emitter.emit('startTrade', {
@@ -186,8 +209,10 @@ function rsi60({ capital, tickInterval, noNewTradeTime , shutDownTime}, Exchange
                 return;
             }
         } else if (activeTrade) {
+            const candle = allCandle[activeTrade]
             if (stopLossCondition(candle, stopLoss)) {
-                console.log({stopLoss})
+                console.log(`hour - ${hour} minute ${minute}`, {activeTrade});
+                console.log("**************stopLoss hit***************** \n\n")
                 emitter.emit("endTrade", {
                     candle,
                     tradeType: activeTrade,
@@ -263,9 +288,6 @@ function calculateInvestment(tradeType, candle, capital, deployCapitalPercentage
     const price = candle.close;
     const deployableCapital = (capital*deployCapitalPercentage)/ 100;
     const lots =  1;//Math.floor(deployableCapital/(price*lotSize));
-    console.log(lots, deployableCapital);
-    console.log(price);
-    console.log('----');
     return {lots, investment: lots*price*lotSize, remainingCapital: capital -  lots*price*lotSize};
 }
 
@@ -291,6 +313,7 @@ function isShutDownTime(currentTime, shutDownTime) {
 
 function getEventName(milliseconds) {
     const minutes = milliseconds/(60*10);
+    return '5-minute-candle'
     return `${minutes}-minute-candle`;
 }
 

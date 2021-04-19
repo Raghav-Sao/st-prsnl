@@ -26,9 +26,21 @@ const getStrikeForOption = ({currentPrice, optionType}) => {
 }
 
 const getNearestITMOptionStrike = niftyStrike => {
-    const callStrike = parseInt(niftyStrike / 200) * 200;
-    const putStrike = parseInt( (niftyStrike + 200) / 200) * 200;
+    const callStrike = parseInt(niftyStrike / 100) * 100;
+    const putStrike = parseInt( (niftyStrike + 100) / 100) * 100;
     return {callStrike, putStrike}
+}
+
+const getOptionStrikes = niftyStrike => {
+    const strike = parseInt(niftyStrike / 100) * 100;
+    const strikes = [];
+    const startPrice = strike - 300;
+    const endPrice = strike + 300;
+    for(let price = startPrice; price <= endPrice; price=price+100) {
+        strikes.push(price)
+    }
+    return strikes;
+    
 }
 
 
@@ -61,10 +73,19 @@ const includeRSI = (candle, lastCandle) => {
     return transformedCandle;
 }
 
+
+const sleep = (time = 400) => {
+    return new Promise((res, rej) => {
+        setTimeout(res, time)
+    })
+}
+
 module.exports = {
     getStrikeForOption,
     sendEmail,
     getNearestITMOptionStrike,
     includeRSI,
+    getOptionStrikes,
+    sleep,
 }
 
