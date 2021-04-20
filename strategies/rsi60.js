@@ -49,30 +49,25 @@ function rsi60({ capital, tickInterval, noNewTradeTime , shutDownTime}, Exchange
         return candle.close >= target;
     }
 
-    const reCalculateTarget = (candle) => {
+    const checkNiftyRSI = async(candle) => {
         let toDate = new Date(candle.time);
         toDate.setMinutes(toDate.getMinutes()+14);
         toDate = new Date(toDate);
         let fromDate = new Date(candle.time);
         fromDate = new Date(fromDate.setDate(fromDate.getDate()-130));
-        getHistoricalData({instrumentToken: 256265, interval: '60minute', toDate, fromDate}).then(data=> {
-            let lastCandle;
-            data.forEach( (candle, index )=> {
-                lastCandle = utils.includeRSI(candle, lastCandle);
-                if(data.length - 2 === index) {
-                    console.log("calculated historical RSI, -------------->", lastCandle.rsi, new Date(candle.date))
-                }
-            })
-            console.log("calculated current RSI, -------------->", lastCandle.rsi, moment(lastCandle.date).utcOffset("+05:30").format())
-            if(lastCandle.rsi > 60 && CHART_SYMBOL.includes('CE')) {
-                target = triggerPrice * 1.8;
-                console.log("target reset to ---->", target);
-            }
-            if(lastCandle.rsi < 40 && CHART_SYMBOL.includes('PE')) {
-                target = triggerPrice * 1.8;
-                console.log("target reset to ---->", target);
-            }
+        const data = await getHistoricalData({instrumentToken: 256265, interval: '60minute', toDate, fromDate});
+        let lastCandle;
+        data.forEach( (candle, index )=> {
+            lastCandle = utils.includeRSI(candle, lastCandle);
         })
+        console.log("calculated current RSI, -------------->", lastCandle.rsi, moment(lastCandle.date).utcOffset("+05:30").format())
+        if(lastCandle.rsi > 60 && CHART_SYMBOL.includes('CE')) {
+            return true
+        }
+        if(lastCandle.rsi < 40 && CHART_SYMBOL.includes('PE')) {
+            return true
+        }
+        return false;
     }
 
     const handleEachTick = tick => {
@@ -115,7 +110,7 @@ function rsi60({ capital, tickInterval, noNewTradeTime , shutDownTime}, Exchange
         
     }
 
-    const handler = (candle) => {
+    const handler = async(candle) => {
         currentCandle = candle;
         const time = moment(candle.time).utcOffset("+05:30");
         const hour = time.hours();
@@ -145,7 +140,7 @@ function rsi60({ capital, tickInterval, noNewTradeTime , shutDownTime}, Exchange
             return;           
         }
 
-        if (hour === 9 && minute === 15) {
+        if (false && hour === 9 && minute === 15) {
             rsi = candle.rsi;
             previousRSI = candle.previousRSI;
             const saveData =  {
@@ -163,13 +158,15 @@ function rsi60({ capital, tickInterval, noNewTradeTime , shutDownTime}, Exchange
         if (!activeTrade && !isNoNewTradeTime({hour, minute}, noNewTradeTime)) {
             console.log("checking..............>")
             activeTrade = tradeStartCondition(candle);
-
+            const isTrade = await checkNiftyRSI(candle);
+            if(!isTrade) {
+                activeTrade = null;
+            }
             if (activeTrade) {
                 
                 stopLoss = candle.low;
                 target = candle.close * (TARGET && parseFloat(TARGET) || 1.1); //taget
                 triggerPrice = candle.close;
-                reCalculateTarget(candle);
                 console.log("starting trade with sl is" + stopLoss + "and target is" + target);
                 const investment = calculateInvestment(activeTrade, candle, capital);
                 totalLots = investment.lots;
