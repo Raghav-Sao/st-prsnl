@@ -12,7 +12,9 @@ function trader(strategy) {
     let dayProfit = 0;
     currentStrategyTrader.emitter.on('startTrade', (data) => {
         console.log("start buy");
-        const chart = {};//getChart(data);
+        const chart = {
+            symbol: data.candle.symbol
+        };
         const price = data.candle.close;
         Exchange.buy({
             chart,
@@ -46,7 +48,9 @@ function trader(strategy) {
         if(data.profitBooking) {
             console.log({profitBooking: data.profitBooking}, "done");
         }
-        const chart = {};
+        const chart = {
+            symbol: data.candle.symbol
+        };
         const price = data.candle.close;
         const prospectProfit = dayProfit+ ((price  - startPrice)*currentStrategyTrader.getLots());
         let bookLots = data.lots;

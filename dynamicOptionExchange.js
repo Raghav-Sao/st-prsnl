@@ -297,9 +297,6 @@ async function init() {
 
 
 const buy = async ({chart, lots}) => {
-    chart = {
-        symbol: CHART_SYMBOL,
-    };
     console.log('exc buy')
     console.log(chart, lots);
     return kc.placeOrder('regular', {
@@ -313,9 +310,6 @@ const buy = async ({chart, lots}) => {
  };
 
  const sell = async ({chart, lots}) => {
-    chart = {
-        symbol: CHART_SYMBOL,
-    };
      console.log('exc sell')
      console.log(chart, lots);
      const positions = await kc.getPositions();
